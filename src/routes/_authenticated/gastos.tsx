@@ -13,9 +13,9 @@ import { Pencil, Trash2 } from "lucide-react";
 export const Route = createFileRoute("/_authenticated/gastos")({
   head: () => ({
     meta: [
-      { title: "Gastos, remitos y presupuestos — Gestión de Cheques" },
+      { title: "Gastos, remitos y presupuestos — Foto a Documento" },
       { name: "description", content: "Cargá gastos diarios a mano o con la foto de borradores, cuadernos y tickets, con aviso en rojo de lo que hay que revisar." },
-      { property: "og:title", content: "Gastos, remitos y presupuestos — Gestión de Cheques" },
+      { property: "og:title", content: "Gastos, remitos y presupuestos — Foto a Documento" },
       { property: "og:description", content: "Revisá gastos y documentos comerciales, conservá códigos exactos y exportá a Excel." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -147,8 +147,6 @@ function GastosPage() {
         </div>
         <nav className="flex gap-3 text-sm">
           <Link to="/" className="underline">Inicio</Link>
-          <Link to="/cheques" className="underline">Cheques</Link>
-          <Link to="/combustible" className="underline">Combustible</Link>
         </nav>
       </header>
 

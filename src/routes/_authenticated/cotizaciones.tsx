@@ -5,9 +5,9 @@ import { actualizarIndicadores, leerCache, pesos, type Indicadores } from "@/lib
 export const Route = createFileRoute("/_authenticated/cotizaciones")({
   head: () => ({
     meta: [
-      { title: "Cotizaciones del dólar y Riesgo País — Argentina" },
+      { title: "Cotizaciones del dólar y Riesgo País — Foto a Documento" },
       { name: "description", content: "Dólar oficial, blue, MEP, contado con liqui, tarjeta, mayorista y cripto, más el Riesgo País; funciona sin internet con la última cotización." },
-      { property: "og:title", content: "Cotizaciones del dólar y Riesgo País — Argentina" },
+      { property: "og:title", content: "Cotizaciones del dólar y Riesgo País — Foto a Documento" },
       { property: "og:description", content: "Todas las variantes del dólar en Argentina y el Riesgo País." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -45,9 +45,7 @@ function CotizacionesPage() {
         </div>
         <nav className="flex gap-3 text-sm">
           <Link to="/" className="underline">Inicio</Link>
-          <Link to="/cheques" className="underline">Cheques</Link>
           <Link to="/gastos" className="underline">Gastos</Link>
-          <Link to="/combustible" className="underline">Combustible</Link>
         </nav>
       </header>
 
