@@ -1,0 +1,27 @@
+# Roadmap
+- [x] Unificar salidas de documentos en una tabla con datos generales por renglón, conservando filtros de limpieza; 16 pruebas y Word → guardado → reapertura verificados
+- [x] Excluir controles internos y cabecera duplicada de lecturas y exportaciones de documentos; 15 pruebas y foto IA → Excel/Word → guardado y reapertura verificados
+- [x] Corregir actualización de Windows; pruebas de descarga completa e incompleta; entregar versión 10
+- [x] Verificar imagen de prueba → lectura IA → Excel/Word → guardado y reapertura
+- [ ] Probar foto manuscrita del usuario y ejecutar versión 10 en su PC (requiere foto original y prueba en Windows)
+- [x] Gastos: editar registros y resaltar filas dudosas
+- [x] Remitos y presupuestos: foto, revisión, validación, guardado local y Excel
+- [x] Etapa 1: pantalla de cheques con semáforo de vencimientos, guardado en la PC
+- [x] Botón exportar / importar lista de cheques
+- [x] Pantalla "Cheques" con filtros por fecha, proveedor (librador), monto y estado
+- [x] Programa para Windows (zip con .exe)
+- [ ] Asistente en el programa de Windows: requiere publicar la app
+- [x] Copias de seguridad automáticas (cheques, programa Windows)
+- [x] Botón "Anular" en la carga por foto para descartar un cheque con errores (fecha mal leída, sobrescritos) antes de guardarlo
+- [x] Punto B: Gastos diarios (foto de notas/tickets con campos dudosos en rojo, carga manual, total por mes y categoría)
+- [x] Punto C: Combustible y maquinaria (precios YPF San Miguel de Tucumán, editables)
+- [ ] Verificar precios YPF en vivo: requiere publicar (el sitio oficial no responde desde el entorno de prueba)
+- [ ] Punto D: Aceites y fluidos
+- [x] Punto E: Cotizaciones del dólar y Riesgo País (banner + pantalla, caché offline)
+- [x] Elegir provincia/ciudad para precios YPF; conexión con YPF opcional
+- [x] Consulta de cheques en el BCRA (denunciados y rechazados por CUIT) en la pantalla Cheques
+- [x] Extractos diario / semanal / mensual para imprimir o enviar por mail (Cheques y Gastos)
+- [x] Datos de la empresa (nombre, CUIT, logo) en la pantalla principal + pestañas de colores
+- [x] Precios YPF "TODO EL PAÍS" (promedio de todas las estaciones del país)
+- [x] Programa Windows v4 (todas las pantallas + extractos + empresa + todo el país)
+- [ ] Copias automáticas de gastos (hoy solo cubren cheques)
