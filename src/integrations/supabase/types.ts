@@ -14,13 +14,183 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      documentos: {
+        Row: {
+          campos_dudosos: Json
+          cliente: string | null
+          created_at: string
+          cuit_cliente: string | null
+          cuit_proveedor: string | null
+          empresa_id: string
+          fecha: string | null
+          id: string
+          items: Json
+          numero: string | null
+          proveedor: string
+          tipo: string
+        }
+        Insert: {
+          campos_dudosos?: Json
+          cliente?: string | null
+          created_at?: string
+          cuit_cliente?: string | null
+          cuit_proveedor?: string | null
+          empresa_id: string
+          fecha?: string | null
+          id?: string
+          items?: Json
+          numero?: string | null
+          proveedor: string
+          tipo: string
+        }
+        Update: {
+          campos_dudosos?: Json
+          cliente?: string | null
+          created_at?: string
+          cuit_cliente?: string | null
+          cuit_proveedor?: string | null
+          empresa_id?: string
+          fecha?: string | null
+          id?: string
+          items?: Json
+          numero?: string | null
+          proveedor?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documentos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      empresas: {
+        Row: {
+          codigo: string
+          created_at: string
+          id: string
+          nombre: string
+        }
+        Insert: {
+          codigo: string
+          created_at?: string
+          id?: string
+          nombre: string
+        }
+        Update: {
+          codigo?: string
+          created_at?: string
+          id?: string
+          nombre?: string
+        }
+        Relationships: []
+      }
+      gastos: {
+        Row: {
+          categoria: string
+          concepto: string
+          created_at: string
+          empresa_id: string
+          fecha: string
+          id: string
+          monto: number
+          origen: string
+        }
+        Insert: {
+          categoria: string
+          concepto: string
+          created_at?: string
+          empresa_id: string
+          fecha: string
+          id?: string
+          monto: number
+          origen?: string
+        }
+        Update: {
+          categoria?: string
+          concepto?: string
+          created_at?: string
+          empresa_id?: string
+          fecha?: string
+          id?: string
+          monto?: number
+          origen?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gastos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      usuarios_empresa: {
+        Row: {
+          created_at: string
+          empresa_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          empresa_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          empresa_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "usuarios_empresa_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      crear_empresa: {
+        Args: { _nombre: string }
+        Returns: {
+          codigo: string
+          created_at: string
+          id: string
+          nombre: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "empresas"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      mi_empresa_id: { Args: never; Returns: string }
+      unirse_empresa: {
+        Args: { _codigo: string }
+        Returns: {
+          codigo: string
+          created_at: string
+          id: string
+          nombre: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "empresas"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       [_ in never]: never
