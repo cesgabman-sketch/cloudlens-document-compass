@@ -7,6 +7,7 @@ import { achicarImagen, baseIA } from "@/lib/imagen";
 import { hoyLocal } from "@/components/SemaforoBadge";
 import { DocumentosGastos } from "@/components/DocumentosGastos";
 import { Button } from "@/components/ui/button";
+import { BotonActualizar } from "@/components/BotonActualizar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Pencil, Trash2 } from "lucide-react";
 
