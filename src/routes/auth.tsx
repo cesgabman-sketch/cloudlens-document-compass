@@ -1,9 +1,20 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/auth")({
-  ssr: false,
+  head: () => ({
+    meta: [
+      { title: "Ingresar — Foto a Documento" },
+      { name: "description", content: "Ingresá a Foto a Documento con tu cuenta y el código de tu empresa." },
+      { property: "og:title", content: "Ingresar — Foto a Documento" },
+      { property: "og:description", content: "Acceso a los gastos y documentos de tu empresa en Foto a Documento." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Acceso,
 });
 
@@ -13,6 +24,7 @@ const input = "w-full rounded-md border border-input bg-background px-3 py-2 tex
 
 function Acceso() {
   const navegar = useNavigate();
+  const queryClient = useQueryClient();
   const [modo, setModo] = useState<Modo>("entrar");
   const [email, setEmail] = useState("");
   const [clave, setClave] = useState("");
@@ -87,7 +99,6 @@ function Acceso() {
       const { data, error: err } = await supabase.rpc("crear_empresa", { _nombre: nombreEmpresa });
       if (err) throw err;
       setCodigoNuevo((data as { codigo: string }).codigo);
-      await navegar({ to: "/", replace: true });
     } catch (err) {
       setError(`No se pudo crear la empresa: ${(err as Error).message}`);
     } finally { setCargando(false); }
@@ -109,8 +120,12 @@ function Acceso() {
   }
 
   async function salirDeLaSesion() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
     await supabase.auth.signOut();
+    setCodigoNuevo("");
     setModo("entrar");
+    await navegar({ to: "/auth", replace: true });
   }
 
   return (
@@ -118,7 +133,15 @@ function Acceso() {
       <div className="w-full max-w-md space-y-4 rounded-xl border bg-card p-6 shadow-sm">
         <h1 className="text-2xl font-bold">Foto a Documento</h1>
 
-        {modo === "empresa" ? (
+        {codigoNuevo ? (
+          <div className="space-y-3">
+            <p className="rounded-md bg-muted px-3 py-2 text-sm">
+              Código de tu empresa: <strong>{codigoNuevo}</strong>
+            </p>
+            <p className="text-sm text-muted-foreground">Pasáselo a quienes se unan a tu empresa.</p>
+            <Button className="w-full" onClick={() => navegar({ to: "/", replace: true })}>Continuar</Button>
+          </div>
+        ) : modo === "empresa" ? (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
               ¿Creás una empresa nueva o te unís a una existente con el código que te dio el dueño?
@@ -154,11 +177,6 @@ function Acceso() {
           </div>
         )}
 
-        {codigoNuevo && (
-          <p className="rounded-md bg-muted px-3 py-2 text-sm">
-            Código de tu empresa (pasáselo a quien quieras que entre con sus datos): <strong>{codigoNuevo}</strong>
-          </p>
-        )}
         {error && <p className="rounded-md bg-muted px-3 py-2 text-sm text-destructive" role="alert">{error}</p>}
       </div>
     </main>

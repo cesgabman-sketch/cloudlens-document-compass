@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Completar acceso de Foto a Documento: resolver pantallas duplicadas, sesión, código de empresa y verificar pruebas e ingreso real
 - [x] Unificar salidas de documentos en una tabla con datos generales por renglón, conservando filtros de limpieza; 16 pruebas y Word → guardado → reapertura verificados
 - [x] Excluir controles internos y cabecera duplicada de lecturas y exportaciones de documentos; 15 pruebas y foto IA → Excel/Word → guardado y reapertura verificados
 - [x] Corregir actualización de Windows; pruebas de descarga completa e incompleta; entregar versión 10
