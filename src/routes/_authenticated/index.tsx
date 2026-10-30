@@ -1,4 +1,5 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { DatosEmpresa } from "@/components/DatosEmpresa";
 import { BotonActualizar } from "@/components/BotonActualizar";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +23,16 @@ export const Route = createFileRoute("/_authenticated/")({
 function Home() {
   const navegar = useNavigate();
   const queryClient = useQueryClient();
+  const [esAdmin, setEsAdmin] = useState(false);
+
+  useEffect(() => {
+    void (async () => {
+      const { data: usuario } = await supabase.auth.getUser();
+      if (!usuario.user) return;
+      const { data } = await supabase.rpc("has_role", { _user_id: usuario.user.id, _role: "admin" });
+      setEsAdmin(!!data);
+    })();
+  }, []);
 
   async function salir() {
     await queryClient.cancelQueries();
@@ -44,6 +55,7 @@ function Home() {
         <nav className="mt-3 flex flex-wrap gap-2 text-sm font-semibold text-tab-foreground">
           <Link to="/gastos" className="rounded-t-lg bg-tab-gastos px-4 py-2 shadow">📷 Foto a Documento</Link>
           <Link to="/cotizaciones" className="rounded-t-lg bg-tab-cotizaciones px-4 py-2 shadow">💵 Cotizaciones</Link>
+          {esAdmin && <Link to="/admin" className="rounded-t-lg bg-primary px-4 py-2 text-primary-foreground shadow">🔑 Licencias</Link>}
         </nav>
         <div className="mt-3">
           <BotonActualizar />

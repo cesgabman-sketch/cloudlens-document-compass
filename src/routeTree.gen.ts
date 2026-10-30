@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCotizacionesRouteImport } from './routes/_authenticated/cotizaciones'
 import { Route as AuthenticatedGastosRouteImport } from './routes/_authenticated/gastos'
 import { Route as ApiConsultaChequesRouteImport } from './routes/api/consulta-cheques'
@@ -31,6 +32,11 @@ const AuthRoute = AuthRouteImport.update({
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCotizacionesRoute =
@@ -68,6 +74,7 @@ const ApiPreciosCombustibleRoute = ApiPreciosCombustibleRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/cotizaciones': typeof AuthenticatedCotizacionesRoute
   '/gastos': typeof AuthenticatedGastosRoute
   '/api/consulta-cheques': typeof ApiConsultaChequesRoute
@@ -77,6 +84,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/cotizaciones': typeof AuthenticatedCotizacionesRoute
   '/gastos': typeof AuthenticatedGastosRoute
   '/api/consulta-cheques': typeof ApiConsultaChequesRoute
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/cotizaciones': typeof AuthenticatedCotizacionesRoute
   '/_authenticated/gastos': typeof AuthenticatedGastosRoute
   '/api/consulta-cheques': typeof ApiConsultaChequesRoute
@@ -102,6 +111,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/admin'
     | '/cotizaciones'
     | '/gastos'
     | '/api/consulta-cheques'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/admin'
     | '/cotizaciones'
     | '/gastos'
     | '/api/consulta-cheques'
@@ -122,6 +133,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/admin'
     | '/_authenticated/cotizaciones'
     | '/_authenticated/gastos'
     | '/api/consulta-cheques'
@@ -161,6 +173,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/cotizaciones': {
@@ -209,12 +228,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCotizacionesRoute: typeof AuthenticatedCotizacionesRoute
   AuthenticatedGastosRoute: typeof AuthenticatedGastosRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCotizacionesRoute: AuthenticatedCotizacionesRoute,
   AuthenticatedGastosRoute: AuthenticatedGastosRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,

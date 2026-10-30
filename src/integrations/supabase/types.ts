@@ -129,6 +129,89 @@ export type Database = {
           },
         ]
       }
+      licencias: {
+        Row: {
+          clave: string
+          cliente: string
+          created_at: string
+          estado: string
+          id: string
+          max_terminales: number
+          vencimiento: string | null
+        }
+        Insert: {
+          clave: string
+          cliente: string
+          created_at?: string
+          estado?: string
+          id?: string
+          max_terminales?: number
+          vencimiento?: string | null
+        }
+        Update: {
+          clave?: string
+          cliente?: string
+          created_at?: string
+          estado?: string
+          id?: string
+          max_terminales?: number
+          vencimiento?: string | null
+        }
+        Relationships: []
+      }
+      terminales: {
+        Row: {
+          activada_at: string
+          id: string
+          licencia_id: string
+          machine_id: string
+          nombre_pc: string
+          ultima_conexion: string
+        }
+        Insert: {
+          activada_at?: string
+          id?: string
+          licencia_id: string
+          machine_id: string
+          nombre_pc?: string
+          ultima_conexion?: string
+        }
+        Update: {
+          activada_at?: string
+          id?: string
+          licencia_id?: string
+          machine_id?: string
+          nombre_pc?: string
+          ultima_conexion?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terminales_licencia_id_fkey"
+            columns: ["licencia_id"]
+            isOneToOne: false
+            referencedRelation: "licencias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       usuarios_empresa: {
         Row: {
           created_at: string
@@ -160,6 +243,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activar_licencia: {
+        Args: { _clave: string; _machine_id: string; _nombre_pc: string }
+        Returns: Json
+      }
+      cambiar_estado_licencia: {
+        Args: { _estado: string; _licencia_id: string }
+        Returns: Json
+      }
       crear_empresa: {
         Args: { _nombre: string }
         Returns: {
@@ -175,6 +266,27 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      crear_licencia: {
+        Args: {
+          _cliente: string
+          _max_terminales?: number
+          _vencimiento?: string
+        }
+        Returns: Json
+      }
+      estado_licencia: {
+        Args: { _clave: string; _machine_id: string }
+        Returns: Json
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      liberar_terminal: { Args: { _terminal_id: string }; Returns: Json }
+      listar_licencias: { Args: never; Returns: Json }
       mi_empresa_id: { Args: never; Returns: string }
       unirse_empresa: {
         Args: { _codigo: string }
@@ -193,7 +305,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -320,6 +432,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
