@@ -9,6 +9,7 @@ mkdir -p public/escritorio
 cp -r dist/client/assets public/escritorio/assets
 cp dist/client/_shell.html public/escritorio/programa.html
 [ -f dist/client/favicon.ico ] && cp dist/client/favicon.ico public/escritorio/favicon.ico
+[ -f dist/client/favicon.png ] && cp dist/client/favicon.png public/escritorio/favicon.png
 (cd public/escritorio && find assets -type f | sort | node -e '
   const files = require("fs").readFileSync(0, "utf8").trim().split("\n");
   process.stdout.write(JSON.stringify({ version: Date.now(), archivos: files }, null, 1));

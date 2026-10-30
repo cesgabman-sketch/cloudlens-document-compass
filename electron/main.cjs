@@ -200,6 +200,7 @@ app.whenReady().then(() => {
     width: 1280,
     height: 860,
     title: "Foto a Documento",
+    icon: path.join(__dirname, "icono.ico"),
     autoHideMenuBar: true,
     webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, "preload.cjs") },
   });

@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Desktop (Windows) build
+- Derive the browser favicon, window icon, and packaged Windows executable icon from the same app icon; pass the ICO to the packager. Why: all installed and browser entry points must show the same identity.
 - Desktop program = Electron shell (`electron/main.cjs`) serving a static SPA build from `vite.desktop.config.ts` via `app://cheques`; package from a clean /tmp staging dir with `@electron/packager`, never change root `package.json` main. Why: SSR web app can't run from file://, and staging keeps the web deploy untouched.
 - Desktop assistant calls the published web app's `/api/consulta-cheques` (base URL from `VITE_ASISTENTE_URL` at desktop build time; CORS allows `app://cheques`). Why: the AI key must stay server-side.
 - Desktop self-update downloads the desktop SPA build from `public/escritorio/` (programa.html + archivos.json list), regenerated with `scripts/publicar-escritorio.sh` before every publish that should reach the PCs. Why: the published SSR pages can't hydrate from app://, and lazy route chunks aren't referenced by the HTML.

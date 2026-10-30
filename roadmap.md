@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Entregar ZIP de Windows con ícono F@D, conservando activación por licencia; archivo íntegro y favicon verificados, ejecución en Windows pendiente de prueba en la PC.
 - [x] Licencias por equipo (node-locking): tablas licencias/terminales, activación en Windows, gracia offline 7 días, panel admin (rol admin dado a la cuenta del usuario)
 - [x] Copia de seguridad forzada + verificación de integridad antes de actualizar el programa de Windows
 - [ ] Probar activación con clave real en la PC del cliente: requiere generar una licencia en el panel y probar el programa de Windows
