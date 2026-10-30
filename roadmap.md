@@ -1,6 +1,7 @@
 # Roadmap
-- [ ] Licencias por equipo (node-locking): tablas licencias/terminales, activación en Windows, gracia offline, panel admin
-- [ ] Copia de seguridad forzada + verificación de integridad antes de actualizar el programa de Windows
+- [x] Licencias por equipo (node-locking): tablas licencias/terminales, activación en Windows, gracia offline 7 días, panel admin (rol admin dado a la cuenta del usuario)
+- [x] Copia de seguridad forzada + verificación de integridad antes de actualizar el programa de Windows
+- [ ] Probar activación con clave real en la PC del cliente: requiere generar una licencia en el panel y probar el programa de Windows
 - [x] Foto a Documento: corregir pantallas duplicadas, actualizar sesión y salida, mostrar código al crear empresa; 26 pruebas y acceso sin sesión verificados
 - [ ] Verificar ingreso real y creación/unión de empresa: requiere que el usuario cree y confirme la primera cuenta; base sin usuarios ni datos de ejemplo
 - [x] Unificar salidas de documentos en una tabla con datos generales por renglón, conservando filtros de limpieza; 16 pruebas y Word → guardado → reapertura verificados
