@@ -130,6 +130,19 @@ function RootComponent() {
     return () => subscription.unsubscribe();
   }, [router, queryClient]);
 
+  // After a new publish, old page files disappear: reload once to get the new version.
+  useEffect(() => {
+    const recargar = (e: Event) => {
+      e.preventDefault();
+      if (sessionStorage.getItem("recargado-version")) return;
+      sessionStorage.setItem("recargado-version", "1");
+      window.location.reload();
+    };
+    window.addEventListener("vite:preloadError", recargar);
+    const t = setTimeout(() => sessionStorage.removeItem("recargado-version"), 10_000);
+    return () => { window.removeEventListener("vite:preloadError", recargar); clearTimeout(t); };
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}

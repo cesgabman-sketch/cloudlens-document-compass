@@ -9,7 +9,8 @@ import { DocumentosGastos } from "@/components/DocumentosGastos";
 import { Button } from "@/components/ui/button";
 import { BotonActualizar } from "@/components/BotonActualizar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Pencil, Trash2 } from "lucide-react";
+import { Download, FileText, Mail, Pencil, Printer, Trash2 } from "lucide-react";
+import { gastosExcel, gastosImprimir, gastosMail, gastosWord } from "@/lib/gastos-salida";
 
 export const Route = createFileRoute("/_authenticated/gastos")({
   head: () => ({
@@ -240,6 +241,12 @@ function GastosPage() {
           <label className="flex items-center gap-2 text-sm">Mes <input type="month" className={input + " w-auto"} value={mes} onChange={(e) => setMes(e.target.value)} /></label>
         </div>
         <p className="mb-3 text-lg font-semibold">Total: {peso(totalGastos(delMes))}</p>
+        {delMes.length > 0 && <div className="mb-4 flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => gastosExcel(delMes, `Gastos ${mes || "todos"}`).catch(() => setAviso("No se pudo exportar el Excel."))}><Download />Excel</Button>
+          <Button variant="outline" onClick={() => gastosWord(delMes, `Gastos ${mes || "todos"}`)}><FileText />Word</Button>
+          <Button variant="outline" onClick={() => gastosImprimir(delMes, `Gastos ${mes || "todos"}`)}><Printer />Imprimir / PDF</Button>
+          <Button variant="outline" onClick={() => gastosMail(delMes, `Gastos ${mes || "todos"}`)}><Mail />Enviar por mail</Button>
+        </div>}
         {porCategoria.length > 0 && (
           <div className="mb-4 flex flex-wrap gap-2 text-sm">
             {porCategoria.map(([c, m]) => <span key={c} className="rounded-full bg-muted px-3 py-1">{c}: {peso(m)}</span>)}
