@@ -68,11 +68,12 @@ function AdminLicencias() {
 
   async function crear() {
     if (!cliente.trim()) return;
-    const { data, error } = await supabase.rpc("crear_licencia", {
+    const args: { _cliente: string; _max_terminales: number; _vencimiento?: string } = {
       _cliente: cliente.trim(),
       _max_terminales: cupo,
-      _vencimiento: vencimiento || undefined,
-    });
+    };
+    if (vencimiento) args._vencimiento = vencimiento;
+    const { data, error } = await supabase.rpc("crear_licencia", args);
     if (error) setMensaje("No se pudo crear la licencia.");
     else {
       setMensaje(`Licencia creada: ${(data as { clave?: string })?.clave ?? ""}`);
