@@ -1,4 +1,5 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { DatosEmpresa } from "@/components/DatosEmpresa";
 import { BotonActualizar } from "@/components/BotonActualizar";
 import { supabase } from "@/integrations/supabase/client";
