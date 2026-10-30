@@ -87,7 +87,14 @@ function Acceso() {
       setAviso("Cuenta creada. Revisá tu email y tocá el enlace para confirmarla; después volvé a entrar acá.");
       setModo("entrar");
     } catch (err) {
-      setError(`No se pudo crear la cuenta: ${(err as Error).message}`);
+      const msg = (err as Error).message;
+      setError(
+        /weak|easy to guess|pwned/i.test(msg)
+          ? "Esa clave es muy común y no es segura. Elegí otra más difícil (por ejemplo, mezclá palabras, números y símbolos, al menos 8 caracteres)."
+          : /already registered|already exists/i.test(msg)
+            ? "Ese email ya tiene cuenta. Tocá «Entrar»."
+            : `No se pudo crear la cuenta: ${msg}`,
+      );
     } finally { setCargando(false); }
   }
 
