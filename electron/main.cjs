@@ -5,6 +5,8 @@
 const { app, BrowserWindow, protocol, net, shell, ipcMain } = require("electron");
 const path = require("path");
 const fs = require("fs");
+const os = require("os");
+const crypto = require("crypto");
 const { pathToFileURL } = require("url");
 const { assetsDeHtml } = require("./archivos-actualizacion.cjs");
 
@@ -14,7 +16,46 @@ protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } },
 ]);
 
-app.setName("Gestion de Cheques");
+app.setName("Foto a Documento");
+
+// Unique hardware ID: hash of hostname + MAC addresses. Stable per PC, so a
+// license activated here fails on any other machine.
+function machineId() {
+  const macs = Object.values(os.networkInterfaces())
+    .flat()
+    .filter((i) => i && !i.internal && i.mac && i.mac !== "00:00:00:00:00:00")
+    .map((i) => i.mac)
+    .sort()
+    .join("|");
+  return crypto.createHash("sha256").update(os.hostname() + "|" + macs).digest("hex");
+}
+
+// Local activation state, protected with an HMAC keyed by the machine ID:
+// copying the file to another PC makes the signature invalid.
+const archivoLicencia = () => path.join(app.getPath("userData"), "licencia.json");
+ipcMain.handle("licencia:machine-id", () => machineId());
+ipcMain.handle("licencia:nombre-pc", () => os.hostname());
+ipcMain.handle("licencia:leer", () => {
+  try {
+    const crudo = JSON.parse(fs.readFileSync(archivoLicencia(), "utf8"));
+    const firma = crypto.createHmac("sha256", machineId()).update(JSON.stringify(crudo.datos)).digest("hex");
+    if (firma !== crudo.firma) return null; // copiado a otra PC o modificado a mano
+    return crudo.datos;
+  } catch {
+    return null;
+  }
+});
+ipcMain.handle("licencia:guardar", (_e, datos) => {
+  const firma = crypto.createHmac("sha256", machineId()).update(JSON.stringify(datos)).digest("hex");
+  const destino = archivoLicencia();
+  fs.writeFileSync(destino + ".tmp", JSON.stringify({ datos, firma }));
+  fs.renameSync(destino + ".tmp", destino);
+  return true;
+});
+ipcMain.handle("licencia:borrar", () => {
+  fs.rmSync(archivoLicencia(), { force: true });
+  return true;
+});
 
 // Updates come from the desktop SPA build published under /escritorio/ (never the
 // SSR web pages, which can't run from app://). "web-cache" was the old, broken format.
@@ -51,24 +92,24 @@ function resolverArchivo(rel) {
 }
 
 // Daily rotating backups in Documents (survives deleting the app/profile folder).
-const carpetaCopias = () => path.join(app.getPath("documents"), "Copias Gestion de Cheques");
+const carpetaCopias = () => path.join(app.getPath("documents"), "Copias Foto a Documento");
 const MAX_COPIAS = 30;
 ipcMain.handle("respaldo:guardar", (_e, json) => {
   const dir = carpetaCopias();
   fs.mkdirSync(dir, { recursive: true });
   const d = new Date();
   const dia = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  const destino = path.join(dir, `cheques-${dia}.json`);
+  const destino = path.join(dir, `foto-a-documento-${dia}.json`);
   fs.writeFileSync(destino + ".tmp", json);
   fs.renameSync(destino + ".tmp", destino);
-  const viejas = fs.readdirSync(dir).filter((f) => /^cheques-\d{4}-\d{2}-\d{2}\.json$/.test(f)).sort();
+  const viejas = fs.readdirSync(dir).filter((f) => /^foto-a-documento-\d{4}-\d{2}-\d{2}\.json$/.test(f)).sort();
   viejas.slice(0, Math.max(0, viejas.length - MAX_COPIAS)).forEach((f) => fs.unlinkSync(path.join(dir, f)));
   return destino;
 });
 ipcMain.handle("respaldo:ultimo", () => {
   const dir = carpetaCopias();
   if (!fs.existsSync(dir)) return null;
-  const f = fs.readdirSync(dir).filter((x) => /^cheques-\d{4}-\d{2}-\d{2}\.json$/.test(x)).sort().pop();
+  const f = fs.readdirSync(dir).filter((x) => /^foto-a-documento-\d{4}-\d{2}-\d{2}\.json$/.test(x)).sort().pop();
   return f ? fs.readFileSync(path.join(dir, f), "utf8") : null;
 });
 
@@ -158,7 +199,7 @@ app.whenReady().then(() => {
   const win = new BrowserWindow({
     width: 1280,
     height: 860,
-    title: "Gestión de Cheques",
+    title: "Foto a Documento",
     autoHideMenuBar: true,
     webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, "preload.cjs") },
   });
