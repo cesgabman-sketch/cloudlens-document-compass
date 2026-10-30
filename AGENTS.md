@@ -16,6 +16,8 @@
 - Validate desktop shell asset references with the shared CommonJS helper and test the Electron update handler with mocked downloads; retain a working cache until the replacement is validated. Why: updater failures must not erase a working installation.
 
 ## Expense documents
+- Foto a Documento keeps one protected route per app screen and a public `/auth` page; the protected index is the only `/` route. Why: duplicate public/protected paths prevent route generation.
+- Session identity changes invalidate the router once at the root; sign-out cancels and clears queries before clearing the session. Why: protected cached views must not survive sign-out.
 - Remitos and budgets use a separate on-device IndexedDB store and a dedicated review component within the expenses page; they never become expenses automatically. Why: commercial documents are not necessarily paid expenses.
 - Preserve the photo's original line total alongside the calculated total; validate before saving/exporting. Why: editing must not erase evidence of a mismatch.
 - Excel exports dynamically import ExcelJS in the browser and write textual codes and quantity-times-price formulas with cached results. Why: offline exports preserve identifiers and remain editable without putting Excel code in server handlers.

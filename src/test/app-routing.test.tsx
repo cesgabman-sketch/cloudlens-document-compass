@@ -14,4 +14,19 @@ describe("App routing", () => {
 
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
+
+  it.each(["/", "/gastos", "/cotizaciones"])("requires login for %s", (path) => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+    expect(router.matchRoutes(path).map(match => match.routeId)).toContain("/_authenticated");
+  });
+
+  it.each(["/cheques", "/combustible"])("removes the %s screen", (path) => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+    expect(router.matchRoutes(path).at(-1)?.routeId).toBe(rootRouteId);
+  });
+
+  it("keeps login publicly accessible", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+    expect(router.matchRoutes("/auth").map(match => match.routeId)).toEqual([rootRouteId, "/auth"]);
+  });
 });

@@ -9,40 +9,40 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as ChequesRouteImport } from './routes/cheques'
-import { Route as CombustibleRouteImport } from './routes/combustible'
-import { Route as CotizacionesRouteImport } from './routes/cotizaciones'
-import { Route as GastosRouteImport } from './routes/gastos'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedCotizacionesRouteImport } from './routes/_authenticated/cotizaciones'
+import { Route as AuthenticatedGastosRouteImport } from './routes/_authenticated/gastos'
 import { Route as ApiConsultaChequesRouteImport } from './routes/api/consulta-cheques'
 import { Route as ApiLeerChequeRouteImport } from './routes/api/leer-cheque'
 import { Route as ApiLeerGastosRouteImport } from './routes/api/leer-gastos'
 import { Route as ApiPreciosCombustibleRouteImport } from './routes/api/precios-combustible'
 
-const IndexRoute = IndexRouteImport.update({
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ChequesRoute = ChequesRouteImport.update({
-  id: '/cheques',
-  path: '/cheques',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CombustibleRoute = CombustibleRouteImport.update({
-  id: '/combustible',
-  path: '/combustible',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CotizacionesRoute = CotizacionesRouteImport.update({
-  id: '/cotizaciones',
-  path: '/cotizaciones',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GastosRoute = GastosRouteImport.update({
+const AuthenticatedCotizacionesRoute =
+  AuthenticatedCotizacionesRouteImport.update({
+    id: '/cotizaciones',
+    path: '/cotizaciones',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedGastosRoute = AuthenticatedGastosRouteImport.update({
   id: '/gastos',
   path: '/gastos',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ApiConsultaChequesRoute = ApiConsultaChequesRouteImport.update({
   id: '/api/consulta-cheques',
@@ -66,45 +66,42 @@ const ApiPreciosCombustibleRoute = ApiPreciosCombustibleRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/cheques': typeof ChequesRoute
-  '/combustible': typeof CombustibleRoute
-  '/cotizaciones': typeof CotizacionesRoute
-  '/gastos': typeof GastosRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/auth': typeof AuthRoute
+  '/cotizaciones': typeof AuthenticatedCotizacionesRoute
+  '/gastos': typeof AuthenticatedGastosRoute
   '/api/consulta-cheques': typeof ApiConsultaChequesRoute
   '/api/leer-cheque': typeof ApiLeerChequeRoute
   '/api/leer-gastos': typeof ApiLeerGastosRoute
   '/api/precios-combustible': typeof ApiPreciosCombustibleRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/cheques': typeof ChequesRoute
-  '/combustible': typeof CombustibleRoute
-  '/cotizaciones': typeof CotizacionesRoute
-  '/gastos': typeof GastosRoute
+  '/auth': typeof AuthRoute
+  '/cotizaciones': typeof AuthenticatedCotizacionesRoute
+  '/gastos': typeof AuthenticatedGastosRoute
   '/api/consulta-cheques': typeof ApiConsultaChequesRoute
   '/api/leer-cheque': typeof ApiLeerChequeRoute
   '/api/leer-gastos': typeof ApiLeerGastosRoute
   '/api/precios-combustible': typeof ApiPreciosCombustibleRoute
+  '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/cheques': typeof ChequesRoute
-  '/combustible': typeof CombustibleRoute
-  '/cotizaciones': typeof CotizacionesRoute
-  '/gastos': typeof GastosRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/cotizaciones': typeof AuthenticatedCotizacionesRoute
+  '/_authenticated/gastos': typeof AuthenticatedGastosRoute
   '/api/consulta-cheques': typeof ApiConsultaChequesRoute
   '/api/leer-cheque': typeof ApiLeerChequeRoute
   '/api/leer-gastos': typeof ApiLeerGastosRoute
   '/api/precios-combustible': typeof ApiPreciosCombustibleRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/cheques'
-    | '/combustible'
+    | '/auth'
     | '/cotizaciones'
     | '/gastos'
     | '/api/consulta-cheques'
@@ -113,34 +110,30 @@ export interface FileRouteTypes {
     | '/api/precios-combustible'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
-    | '/cheques'
-    | '/combustible'
+    | '/auth'
     | '/cotizaciones'
     | '/gastos'
     | '/api/consulta-cheques'
     | '/api/leer-cheque'
     | '/api/leer-gastos'
     | '/api/precios-combustible'
+    | '/'
   id:
     | '__root__'
-    | '/'
-    | '/cheques'
-    | '/combustible'
-    | '/cotizaciones'
-    | '/gastos'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/cotizaciones'
+    | '/_authenticated/gastos'
     | '/api/consulta-cheques'
     | '/api/leer-cheque'
     | '/api/leer-gastos'
     | '/api/precios-combustible'
+    | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ChequesRoute: typeof ChequesRoute
-  CombustibleRoute: typeof CombustibleRoute
-  CotizacionesRoute: typeof CotizacionesRoute
-  GastosRoute: typeof GastosRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   ApiConsultaChequesRoute: typeof ApiConsultaChequesRoute
   ApiLeerChequeRoute: typeof ApiLeerChequeRoute
   ApiLeerGastosRoute: typeof ApiLeerGastosRoute
@@ -149,40 +142,40 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/cheques': {
-      id: '/cheques'
-      path: '/cheques'
-      fullPath: '/cheques'
-      preLoaderRoute: typeof ChequesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/combustible': {
-      id: '/combustible'
-      path: '/combustible'
-      fullPath: '/combustible'
-      preLoaderRoute: typeof CombustibleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cotizaciones': {
-      id: '/cotizaciones'
+    '/_authenticated/cotizaciones': {
+      id: '/_authenticated/cotizaciones'
       path: '/cotizaciones'
       fullPath: '/cotizaciones'
-      preLoaderRoute: typeof CotizacionesRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedCotizacionesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/gastos': {
-      id: '/gastos'
+    '/_authenticated/gastos': {
+      id: '/_authenticated/gastos'
       path: '/gastos'
       fullPath: '/gastos'
-      preLoaderRoute: typeof GastosRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedGastosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/consulta-cheques': {
       id: '/api/consulta-cheques'
@@ -215,12 +208,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCotizacionesRoute: typeof AuthenticatedCotizacionesRoute
+  AuthenticatedGastosRoute: typeof AuthenticatedGastosRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCotizacionesRoute: AuthenticatedCotizacionesRoute,
+  AuthenticatedGastosRoute: AuthenticatedGastosRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ChequesRoute: ChequesRoute,
-  CombustibleRoute: CombustibleRoute,
-  CotizacionesRoute: CotizacionesRoute,
-  GastosRoute: GastosRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   ApiConsultaChequesRoute: ApiConsultaChequesRoute,
   ApiLeerChequeRoute: ApiLeerChequeRoute,
   ApiLeerGastosRoute: ApiLeerGastosRoute,

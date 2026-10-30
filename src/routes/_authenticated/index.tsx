@@ -2,6 +2,8 @@ import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { DatosEmpresa } from "@/components/DatosEmpresa";
 import { BotonActualizar } from "@/components/BotonActualizar";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -19,8 +21,11 @@ export const Route = createFileRoute("/_authenticated/")({
 
 function Home() {
   const navegar = useNavigate();
+  const queryClient = useQueryClient();
 
   async function salir() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
     await supabase.auth.signOut();
     await navegar({ to: "/auth", replace: true });
   }
@@ -30,9 +35,9 @@ function Home() {
       <header>
         <div className="flex items-start justify-between gap-3">
           <DatosEmpresa />
-          <button onClick={salir} className="rounded-md border px-3 py-2 text-sm whitespace-nowrap">
+          <Button variant="outline" onClick={salir}>
             Cerrar sesión
-          </button>
+          </Button>
         </div>
         <h1 className="mt-4 text-3xl font-bold">Foto a Documento</h1>
         <p className="text-muted-foreground">Sacá foto a notas y documentos y tené todo ordenado.</p>
