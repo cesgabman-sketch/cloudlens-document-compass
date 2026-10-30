@@ -46,7 +46,12 @@ function AdminLicencias() {
   const [vencimiento, setVencimiento] = useState("");
 
   async function cargar() {
-    const { data: rol } = await supabase.rpc("has_role", { _user_id: (await supabase.auth.getUser()).data.user?.id, _role: "admin" });
+    const { data: usuario } = await supabase.auth.getUser();
+    if (!usuario.user) {
+      setEsAdmin(false);
+      return;
+    }
+    const { data: rol } = await supabase.rpc("has_role", { _user_id: usuario.user.id, _role: "admin" });
     if (!rol) {
       setEsAdmin(false);
       return;
@@ -66,7 +71,7 @@ function AdminLicencias() {
     const { data, error } = await supabase.rpc("crear_licencia", {
       _cliente: cliente.trim(),
       _max_terminales: cupo,
-      _vencimiento: vencimiento || null,
+      _vencimiento: vencimiento || undefined,
     });
     if (error) setMensaje("No se pudo crear la licencia.");
     else {
