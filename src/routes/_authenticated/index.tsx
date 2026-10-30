@@ -42,7 +42,7 @@ function Home() {
         <h1 className="mt-4 text-3xl font-bold">Foto a Documento</h1>
         <p className="text-muted-foreground">Sacá foto a notas y documentos y tené todo ordenado.</p>
         <nav className="mt-3 flex flex-wrap gap-2 text-sm font-semibold text-tab-foreground">
-          <Link to="/gastos" className="rounded-t-lg bg-tab-gastos px-4 py-2 shadow">💰 Gastos diarios</Link>
+          <Link to="/gastos" className="rounded-t-lg bg-tab-gastos px-4 py-2 shadow">📷 Foto a Documento</Link>
           <Link to="/cotizaciones" className="rounded-t-lg bg-tab-cotizaciones px-4 py-2 shadow">💵 Cotizaciones</Link>
         </nav>
         <div className="mt-3">
