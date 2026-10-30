@@ -151,7 +151,7 @@ function GastosPage() {
       </header>
 
       <Tabs defaultValue="gastos" className="space-y-6">
-      <TabsList className="h-auto flex-wrap"><TabsTrigger value="gastos">Gastos diarios</TabsTrigger><TabsTrigger value="documentos">Remitos y presupuestos</TabsTrigger></TabsList>
+      <TabsList className="h-auto flex-wrap"><TabsTrigger value="gastos">Foto a Documento</TabsTrigger><TabsTrigger value="documentos">Remitos y presupuestos</TabsTrigger></TabsList>
       <TabsContent value="documentos"><DocumentosGastos /></TabsContent>
       <TabsContent value="gastos" className="space-y-6">
       <Extracto
