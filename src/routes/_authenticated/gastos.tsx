@@ -7,6 +7,7 @@ import { achicarImagen, baseIA } from "@/lib/imagen";
 import { hoyLocal } from "@/components/SemaforoBadge";
 import { DocumentosGastos } from "@/components/DocumentosGastos";
 import { Button } from "@/components/ui/button";
+import { BotonActualizar } from "@/components/BotonActualizar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Pencil, Trash2 } from "lucide-react";
 
@@ -145,7 +146,8 @@ function GastosPage() {
           <h1 className="text-3xl font-bold">Gastos diarios</h1>
           <p className="text-muted-foreground">Borradores, cuadernos y tickets en papel.</p>
         </div>
-        <nav className="flex gap-3 text-sm">
+        <nav className="flex items-center gap-3 text-sm">
+          <BotonActualizar />
           <Link to="/" className="underline">Inicio</Link>
         </nav>
       </header>
