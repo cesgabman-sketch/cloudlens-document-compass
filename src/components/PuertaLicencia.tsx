@@ -54,7 +54,7 @@ export function PuertaLicencia({ children }: { children: ReactNode }) {
   );
 }
 
-function PantallaActivacion({ motivoBloqueo, onActivada }: { motivoBloqueo?: string; onActivada: (e: EstadoLicencia) => void }) {
+function PantallaActivacion({ motivoBloqueo, onActivada }: { motivoBloqueo: string | undefined; onActivada: (e: EstadoLicencia) => void }) {
   const [clave, setClave] = useState("");
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(motivoBloqueo ?? "");
