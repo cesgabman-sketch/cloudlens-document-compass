@@ -23,6 +23,16 @@ export const Route = createFileRoute("/_authenticated/")({
 function Home() {
   const navegar = useNavigate();
   const queryClient = useQueryClient();
+  const [esAdmin, setEsAdmin] = useState(false);
+
+  useEffect(() => {
+    void (async () => {
+      const { data: usuario } = await supabase.auth.getUser();
+      if (!usuario.user) return;
+      const { data } = await supabase.rpc("has_role", { _user_id: usuario.user.id, _role: "admin" });
+      setEsAdmin(!!data);
+    })();
+  }, []);
 
   async function salir() {
     await queryClient.cancelQueries();
