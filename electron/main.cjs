@@ -11,7 +11,7 @@ const { pathToFileURL } = require("url");
 const { assetsDeHtml } = require("./archivos-actualizacion.cjs");
 
 const ROOT = path.join(__dirname, "..", "dist", "client");
-const WEB_URL = "https://cloudlens-check-document.lovable.app/";
+const WEB_URL = "https://cloudlens-document-compass.lovable.app/";
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } },
 ]);

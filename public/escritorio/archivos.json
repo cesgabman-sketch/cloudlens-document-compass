@@ -1,18 +1,18 @@
 {
- "version": 1793297401488,
+ "version": 1793379647606,
  "archivos": [
-  "assets/Extracto-DaFbK7vQ.js",
-  "assets/SemaforoBadge-CMV2uxzu.js",
-  "assets/cheques-DwbKfwHA.js",
-  "assets/combustible-hJHtzDBc.js",
-  "assets/cotizaciones-DYNXre8K.js",
-  "assets/db-cheques-CbXVXtcE.js",
+  "assets/BotonActualizar-DzlErL4Z.js",
+  "assets/_authenticated-DhviMVX4.js",
+  "assets/admin-Ca5PDJN-.js",
+  "assets/auth-BB7tIaf-.js",
+  "assets/button-DUDAzcGC.js",
+  "assets/cotizaciones-UoIvYFGu.js",
   "assets/exceljs.min-DN_wkE-L.js",
-  "assets/gastos-Bm0TsfXs.js",
-  "assets/index-DJRWgP-L.js",
+  "assets/gastos-CKxu1dff.js",
+  "assets/index-CvLU7r82.js",
   "assets/rolldown-runtime-W7wSyTde.js",
-  "assets/routes-BIhqzapr.js",
-  "assets/servidor-Df-kMmju.js",
-  "assets/styles-5nbg2TNz.css"
+  "assets/route-BdRB7jo-.js",
+  "assets/styles-Bd0AANq5.css",
+  "assets/useRouter-q64TQX91.js"
  ]
 }

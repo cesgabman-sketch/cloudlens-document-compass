@@ -4,7 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 rm -rf public/escritorio
-VITE_DESKTOP=1 VITE_ASISTENTE_URL=https://cloudlens-check-document.lovable.app npx vite build --config vite.desktop.config.ts
+VITE_DESKTOP=1 VITE_ASISTENTE_URL=https://cloudlens-document-compass.lovable.app npx vite build --config vite.desktop.config.ts
 mkdir -p public/escritorio
 cp -r dist/client/assets public/escritorio/assets
 cp dist/client/_shell.html public/escritorio/programa.html
