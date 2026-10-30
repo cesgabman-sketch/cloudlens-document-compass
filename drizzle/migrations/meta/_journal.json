@@ -8,6 +8,13 @@
       "when": 1793314866495,
       "tag": "0000_base_por_empresa",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793379130426,
+      "tag": "0001_licencias_por_equipo",
+      "breakpoints": true
     }
   ]
 }
