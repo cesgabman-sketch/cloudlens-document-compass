@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Camera, Download, Pencil, Plus, Save, Trash2, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { hoyLocal } from "./SemaforoBadge";
-import { achicarImagen, baseIA } from "@/lib/imagen";
+import { achicarImagen } from "@/lib/imagen";
+import { ErrorLectura, leerFotoIA } from "@/lib/lector-ia";
 import { borrarDocumento, guardarDocumento, listarDocumentos } from "@/lib/db-documentos";
 import { TIPOS_DOCUMENTO, cambiarItem, difiereTotal, documentoValido, totalDocumento, totalItem, type Documento, type ItemDocumento, type TipoDocumento } from "@/lib/documentos";
 import { exportarDocumento } from "@/lib/documentos-excel";
@@ -22,24 +23,26 @@ export function DocumentosGastos() {
   const [foto, setFoto] = useState("");
   const [aviso, setAviso] = useState("");
   const [leyendo, setLeyendo] = useState(false);
+  const [reintentable, setReintentable] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const archivo = useRef<HTMLInputElement>(null);
   useEffect(() => { listarDocumentos().then(setDocumentos).catch(() => setAviso("No se pudieron leer los documentos guardados.")); }, []);
 
   async function leer(file: File) {
-    if (!navigator.onLine) return setAviso("Sin internet no se pueden leer fotos. Podés cargar el documento a mano.");
     if (actual && !confirm("¿Descartar la revisión actual y leer otra foto?")) return;
-    setLeyendo(true); setAviso("");
+    try { const imagen = await achicarImagen(file, 2400); setFoto(imagen); await procesarFoto(imagen); }
+    catch { setAviso("No se pudo preparar la foto."); }
+    finally { if (archivo.current) archivo.current.value = ""; }
+  }
+  async function procesarFoto(imagen: string) {
+    setLeyendo(true); setAviso(""); setReintentable(false);
     try {
-      const imagen = await achicarImagen(file, 2400);
-      const r = await fetch(`${baseIA()}/api/leer-gastos`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imagen, modo: "documento" }) });
-      const respuesta = await r.json();
-      if (!r.ok) throw new Error(respuesta.error ?? "No se pudo leer el documento.");
+      const respuesta = await leerFotoIA(imagen, "documento");
       const datos = limpiarDocumento(respuesta);
       const items = Array.isArray(datos.items) && datos.items.length ? datos.items : [nuevoItem()];
       setActual({ ...datos, items, id: crypto.randomUUID() }); setFoto(imagen);
       if (!datos.items?.length) setAviso("Leí los datos generales pero no los renglones. Completalos a mano mirando la foto.");
-    } catch (e) { setAviso(e instanceof Error ? e.message : "No se pudo leer la foto."); }
+    } catch (e) { setAviso(e instanceof Error ? e.message : "No se pudo leer la foto."); setReintentable(e instanceof ErrorLectura && e.retryable); }
     finally { setLeyendo(false); if (archivo.current) archivo.current.value = ""; }
   }
   function editar(i: number, campo: "codigo" | "cantidad" | "descripcion" | "precioUnitario", valor: string) {
@@ -80,6 +83,8 @@ export function DocumentosGastos() {
       <input ref={archivo} type="file" aria-label="Foto de remito o presupuesto" accept="image/*" capture="environment" className="hidden" onChange={e => { const file = e.target.files?.[0]; if (file) void leer(file); }} />
     </div>
     {aviso && <p role="status" className="rounded-md bg-muted p-3 text-sm">{aviso}</p>}
+    {foto && !actual && <img src={foto} alt="Documento pendiente de lectura" className="max-h-72 max-w-full object-contain" />}
+    {foto && reintentable && <Button variant="outline" disabled={leyendo} onClick={() => procesarFoto(foto)}>Reintentar lectura</Button>}
     {actual && <section className="space-y-4 border-t pt-4" aria-label="Revisión del documento">
       {foto && <img src={foto} alt="Remito o presupuesto subido" className="max-h-72 max-w-full object-contain" />}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

@@ -3,7 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { CATEGORIAS, esGastoValido, totalGastos, type CampoGasto, type Gasto } from "@/lib/gastos";
 import { Extracto } from "@/components/Extracto";
 import { borrarGasto, guardarGastos, listarGastos } from "@/lib/db-gastos";
-import { achicarImagen, baseIA } from "@/lib/imagen";
+import { achicarImagen } from "@/lib/imagen";
+import { ErrorLectura, leerFotoIA } from "@/lib/lector-ia";
 import { hoyLocal } from "@/components/SemaforoBadge";
 import { DocumentosGastos } from "@/components/DocumentosGastos";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,7 @@ function GastosPage() {
   const [filas, setFilas] = useState<Fila[]>([]);
   const [foto, setFoto] = useState("");
   const [leyendo, setLeyendo] = useState(false);
+  const [reintentable, setReintentable] = useState(false);
   const [aviso, setAviso] = useState("");
   const [mes, setMes] = useState("");
   const archivo = useRef<HTMLInputElement>(null);
@@ -70,16 +72,19 @@ function GastosPage() {
   }
 
   async function leerFoto(file: File) {
+    if (filas.length && !confirm("¿Descartar la revisión actual y leer otra foto?")) return;
+    try { const imagen = await achicarImagen(file, 2000); setFoto(imagen); await procesarFoto(imagen); }
+    catch { setAviso("No se pudo preparar la foto."); }
+    finally { if (archivo.current) archivo.current.value = ""; }
+  }
+
+  async function procesarFoto(imagen: string) {
     setAviso("");
     setFilas([]);
-    if (!navigator.onLine) return setAviso("Sin internet no se pueden leer fotos. Cargá los gastos a mano o probá cuando vuelva la conexión.");
+    setReintentable(false);
     setLeyendo(true);
     try {
-      const imagen = await achicarImagen(file, 2000);
-      setFoto(imagen);
-      const res = await fetch(`${baseIA()}/api/leer-gastos`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imagen }) });
-      const datos = await res.json();
-      if (!res.ok) throw new Error(datos.error ?? "No se pudo leer la foto.");
+      const datos = await leerFotoIA(imagen, "gastos");
       const leidos = (datos.gastos ?? []) as { fecha: string | null; concepto: string | null; monto: number | null; categoria: string | null; camposDudosos: string[] }[];
       if (!leidos.length) return setAviso("No encontré gastos legibles en la foto.");
       setFilas(
@@ -100,6 +105,7 @@ function GastosPage() {
       );
     } catch (e) {
       setAviso(e instanceof Error ? e.message : "No se pudo leer la foto.");
+      setReintentable(e instanceof ErrorLectura && e.retryable);
     } finally {
       setLeyendo(false);
       if (archivo.current) archivo.current.value = "";
@@ -149,6 +155,7 @@ function GastosPage() {
         </div>
         <nav className="flex items-center gap-3 text-sm">
           <BotonActualizar />
+          <Button asChild variant="outline"><Link to="/ajustes">Lector IA</Link></Button>
           <Link to="/" className="underline">Inicio</Link>
         </nav>
       </header>
@@ -181,6 +188,7 @@ function GastosPage() {
           <input ref={archivo} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => e.target.files?.[0] && leerFoto(e.target.files[0])} />
         </div>
         {foto && <img src={foto} alt="Foto subida" className="mb-4 max-h-64 rounded-md border" />}
+        {foto && reintentable && <Button variant="outline" disabled={leyendo} onClick={() => procesarFoto(foto)}>Reintentar lectura</Button>}
         {filas.length > 0 && (
           <div className="space-y-3">
             {pendientes > 0 && (
