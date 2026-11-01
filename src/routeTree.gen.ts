@@ -13,6 +13,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAjustesRouteImport } from './routes/_authenticated/ajustes'
 import { Route as AuthenticatedCotizacionesRouteImport } from './routes/_authenticated/cotizaciones'
 import { Route as AuthenticatedGastosRouteImport } from './routes/_authenticated/gastos'
 import { Route as ApiConsultaChequesRouteImport } from './routes/api/consulta-cheques'
@@ -37,6 +38,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAjustesRoute = AuthenticatedAjustesRouteImport.update({
+  id: '/ajustes',
+  path: '/ajustes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCotizacionesRoute =
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/ajustes': typeof AuthenticatedAjustesRoute
   '/cotizaciones': typeof AuthenticatedCotizacionesRoute
   '/gastos': typeof AuthenticatedGastosRoute
   '/api/consulta-cheques': typeof ApiConsultaChequesRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/ajustes': typeof AuthenticatedAjustesRoute
   '/cotizaciones': typeof AuthenticatedCotizacionesRoute
   '/gastos': typeof AuthenticatedGastosRoute
   '/api/consulta-cheques': typeof ApiConsultaChequesRoute
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/ajustes': typeof AuthenticatedAjustesRoute
   '/_authenticated/cotizaciones': typeof AuthenticatedCotizacionesRoute
   '/_authenticated/gastos': typeof AuthenticatedGastosRoute
   '/api/consulta-cheques': typeof ApiConsultaChequesRoute
@@ -112,6 +121,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/admin'
+    | '/ajustes'
     | '/cotizaciones'
     | '/gastos'
     | '/api/consulta-cheques'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/admin'
+    | '/ajustes'
     | '/cotizaciones'
     | '/gastos'
     | '/api/consulta-cheques'
@@ -134,6 +145,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/admin'
+    | '/_authenticated/ajustes'
     | '/_authenticated/cotizaciones'
     | '/_authenticated/gastos'
     | '/api/consulta-cheques'
@@ -180,6 +192,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ajustes': {
+      id: '/_authenticated/ajustes'
+      path: '/ajustes'
+      fullPath: '/ajustes'
+      preLoaderRoute: typeof AuthenticatedAjustesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/cotizaciones': {
@@ -229,6 +248,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAjustesRoute: typeof AuthenticatedAjustesRoute
   AuthenticatedCotizacionesRoute: typeof AuthenticatedCotizacionesRoute
   AuthenticatedGastosRoute: typeof AuthenticatedGastosRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -236,6 +256,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAjustesRoute: AuthenticatedAjustesRoute,
   AuthenticatedCotizacionesRoute: AuthenticatedCotizacionesRoute,
   AuthenticatedGastosRoute: AuthenticatedGastosRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
