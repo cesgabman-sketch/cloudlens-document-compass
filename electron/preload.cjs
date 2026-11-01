@@ -1,5 +1,16 @@
 // Exposes automatic backup, official fuel prices, self-update and license activation to the app.
 const { contextBridge, ipcRenderer } = require("electron");
+contextBridge.exposeInMainWorld("accesoLocal", {
+  leer: () => ipcRenderer.invoke("acceso:leer"),
+  guardar: datos => ipcRenderer.invoke("acceso:guardar", datos),
+  borrar: () => ipcRenderer.invoke("acceso:borrar"),
+});
+contextBridge.exposeInMainWorld("lectorIA", {
+  estado: () => ipcRenderer.invoke("lector:estado"),
+  guardarProbar: clave => ipcRenderer.invoke("lector:guardar-probar", clave),
+  borrar: () => ipcRenderer.invoke("lector:borrar"),
+  leer: datos => ipcRenderer.invoke("lector:leer", datos),
+});
 contextBridge.exposeInMainWorld("respaldo", {
   guardar: (json) => ipcRenderer.invoke("respaldo:guardar", json),
   ultimo: () => ipcRenderer.invoke("respaldo:ultimo"),

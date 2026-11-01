@@ -10,6 +10,9 @@
 <!-- LOVABLE:END -->
 
 ## Desktop (Windows) build
+- End-user Gemini keys and offline identity receipts live only in Electron safeStorage-encrypted files; IPC accepts only app://cheques frames and never returns keys. Why: client credentials must not enter the browser storage or the hosted server.
+- Offline access uses the last online-confirmed company identity on this PC, and explicit sign-out deletes it; licensing stays independent and admin always requires online role validation. Why: local work must survive network loss without granting cloud privileges.
+- Direct Gemini extraction uses the desktop JSON contract with the existing extraction schemas and prompts; hosted readers remain the no-key default and errors never trigger automatic provider switching. Why: user-selected credentials and data rules must be preserved.
 - Derive the browser favicon, window icon, and packaged Windows executable icon from the same app icon; pass the ICO to the packager. Why: all installed and browser entry points must show the same identity.
 - Desktop program = Electron shell (`electron/main.cjs`) serving a static SPA build from `vite.desktop.config.ts` via `app://cheques`; package from a clean /tmp staging dir with `@electron/packager`, never change root `package.json` main. Why: SSR web app can't run from file://, and staging keeps the web deploy untouched.
 - Desktop assistant calls the published web app's `/api/consulta-cheques` (base URL from `VITE_ASISTENTE_URL` at desktop build time; CORS allows `app://cheques`). Why: the AI key must stay server-side.

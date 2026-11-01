@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { accesoSinInternet, borrarAccesoLocal, recordarAcceso } from "@/lib/acceso-local";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -40,6 +41,7 @@ function Acceso() {
     const { data, error: e } = await supabase.rpc("mi_empresa_id");
     if (e) { setError("No se pudo verificar la empresa. Probá de nuevo."); return; }
     if (data) {
+      await recordarAcceso(data);
       await navegar({ to: "/", replace: true });
       return;
     }
@@ -48,6 +50,7 @@ function Acceso() {
 
   useEffect(() => {
     void (async () => {
+      if (await accesoSinInternet()) { await navegar({ to: "/", replace: true }); return; }
       const { data } = await supabase.auth.getSession();
       if (data.session) await continuar();
     })();
@@ -106,6 +109,8 @@ function Acceso() {
       const { data, error: err } = await supabase.rpc("crear_empresa", { _nombre: nombreEmpresa });
       if (err) throw err;
       setCodigoNuevo((data as { codigo: string }).codigo);
+      const empresa = await supabase.rpc("mi_empresa_id");
+      if (empresa.data) await recordarAcceso(empresa.data);
     } catch (err) {
       setError(`No se pudo crear la empresa: ${(err as Error).message}`);
     } finally { setCargando(false); }
@@ -118,6 +123,8 @@ function Acceso() {
     try {
       const { error: err } = await supabase.rpc("unirse_empresa", { _codigo: codigo });
       if (err) throw err;
+      const empresa = await supabase.rpc("mi_empresa_id");
+      if (empresa.data) await recordarAcceso(empresa.data);
       await navegar({ to: "/", replace: true });
     } catch (err) {
       setError((err as Error).message.includes("invalido")
@@ -129,7 +136,8 @@ function Acceso() {
   async function salirDeLaSesion() {
     await queryClient.cancelQueries();
     queryClient.clear();
-    await supabase.auth.signOut();
+    await borrarAccesoLocal();
+    await supabase.auth.signOut({ scope: "local" });
     setCodigoNuevo("");
     setModo("entrar");
     await navegar({ to: "/auth", replace: true });

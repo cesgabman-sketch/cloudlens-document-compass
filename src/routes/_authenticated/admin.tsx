@@ -46,6 +46,11 @@ function AdminLicencias() {
   const [vencimiento, setVencimiento] = useState("");
 
   async function cargar() {
+    if (!navigator.onLine) {
+      setEsAdmin(false);
+      setMensaje("La administración de licencias necesita internet. Podés seguir trabajando con tus documentos locales.");
+      return;
+    }
     const { data: usuario } = await supabase.auth.getUser();
     if (!usuario.user) {
       setEsAdmin(false);
@@ -100,6 +105,7 @@ function AdminLicencias() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4">
         <p className="text-muted-foreground">Esta sección es solo para el administrador.</p>
+        {mensaje && <p role="status" className="text-sm text-muted-foreground">{mensaje}</p>}
         <Link to="/" className="rounded-md border px-4 py-2 font-semibold">← Volver al inicio</Link>
       </div>
     );

@@ -1,4 +1,7 @@
 # Roadmap
+- [ ] Continuar uso sin internet: ingreso local en Windows tras ingreso verificado, sin acceso administrativo offline; conservar licencia y datos locales
+- [ ] Lector híbrido: configuración Gemini propia cifrada en Windows, prueba de clave y lectura con mismo JSON; servidor por defecto sin cambio automático ante errores
+- [ ] Verificar lectura real con clave Gemini del cliente (requiere una clave válida ingresada en su PC)
 - [x] Entregar ZIP de Windows con ícono F@D, conservando activación por licencia; archivo íntegro y favicon verificados, ejecución en Windows pendiente de prueba en la PC.
 - [x] Licencias por equipo (node-locking): tablas licencias/terminales, activación en Windows, gracia offline 7 días, panel admin (rol admin dado a la cuenta del usuario)
 - [x] Copia de seguridad forzada + verificación de integridad antes de actualizar el programa de Windows
