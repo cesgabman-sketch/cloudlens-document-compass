@@ -2,13 +2,45 @@
 // IndexedDB data persists in the user's profile on the PC (works offline).
 // Self-update: downloads the published web app into userData/web-cache and
 // serves it from there when present, so "Actualizar programa" needs no reinstall.
-const { app, BrowserWindow, protocol, net, shell, ipcMain } = require("electron");
+const { app, BrowserWindow, protocol, net, shell, ipcMain, safeStorage } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const os = require("os");
 const crypto = require("crypto");
 const { pathToFileURL } = require("url");
 const { assetsDeHtml } = require("./archivos-actualizacion.cjs");
+const { crearAlmacenSeguro } = require("./almacen-seguro.cjs");
+const { leerGemini, probarGemini } = require("./lector-gemini.cjs");
+const almacenSeguro = crearAlmacenSeguro(safeStorage, () => app.getPath("userData"));
+
+function canalLocal(nombre, fn) {
+  ipcMain.handle(nombre, async (event, ...args) => {
+    if (!event.senderFrame?.url?.startsWith("app://cheques/")) throw new Error("Acceso no permitido.");
+    return fn(...args);
+  });
+}
+canalLocal("acceso:leer", () => almacenSeguro.leer("acceso-local"));
+canalLocal("acceso:guardar", datos => {
+  if (typeof datos?.userId !== "string" || typeof datos?.empresaId !== "string") return false;
+  almacenSeguro.guardar("acceso-local", { userId: datos.userId, empresaId: datos.empresaId });
+  return true;
+});
+canalLocal("acceso:borrar", () => { almacenSeguro.borrar("acceso-local"); return true; });
+canalLocal("lector:estado", () => ({ configurado: !!almacenSeguro.leer("gemini")?.clave }));
+canalLocal("lector:borrar", () => { almacenSeguro.borrar("gemini"); return { ok: true }; });
+canalLocal("lector:guardar-probar", async clave => {
+  if (typeof clave !== "string" || !clave.trim()) return { ok: false, error: "Pegá la clave de Google." };
+  const resultado = await probarGemini(net.fetch.bind(net), clave.trim());
+  if (!resultado.ok) return resultado;
+  try { almacenSeguro.guardar("gemini", { clave: clave.trim() }); }
+  catch { return { ok: false, error: "No se pudo guardar la clave de forma segura en esta PC." }; }
+  return { ok: true };
+});
+canalLocal("lector:leer", async datos => {
+  const clave = almacenSeguro.leer("gemini")?.clave;
+  if (!clave) return { ok: false, error: "No hay una clave propia guardada." };
+  return leerGemini(net.fetch.bind(net), clave, datos);
+});
 
 const ROOT = path.join(__dirname, "..", "dist", "client");
 const WEB_URL = "https://cloudlens-document-compass.lovable.app/";
