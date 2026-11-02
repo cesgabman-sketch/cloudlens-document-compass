@@ -116,7 +116,10 @@ export const Route = createFileRoute("/api/leer-gastos")({
           return Response.json(datos, { headers: getLovableAiGatewayResponseHeaders((await result.response).headers, CORS) });
         } catch (e) {
           if (NoObjectGeneratedError.isInstance(e)) return json({ error: "No se pudieron leer los gastos. Probá con una foto más clara." }, 422);
-          const status = (e as { statusCode?: number }).statusCode;
+          let status: number | undefined;
+          for (let c: unknown = e, i = 0; c && i < 5 && status === undefined; c = (c as { cause?: unknown }).cause, i++) {
+            status = (c as { statusCode?: number }).statusCode;
+          }
           console.error("leer-gastos", e);
           if (status === 402) return json({ error: "Se agotaron los créditos de IA del espacio de trabajo." }, 402);
           if (status === 429) return json({ error: "Demasiadas lecturas seguidas. Esperá un momento." }, 429);
