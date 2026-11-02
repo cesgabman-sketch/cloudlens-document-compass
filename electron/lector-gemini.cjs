@@ -1,5 +1,5 @@
 const contratos = require('./lector-contrato.json');
-const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent';
 
 async function consultarGemini(fetcher, clave, body) {
   let response;
@@ -14,7 +14,7 @@ async function consultarGemini(fetcher, clave, body) {
     const error = status === 429 ? 'Google alcanzó el límite de lecturas de tu cuenta. Esperá un momento antes de reintentar.'
       : status >= 500 ? 'Google no está disponible ahora. Esperá un momento antes de reintentar.'
       : status === 401 || status === 403 ? 'Google rechazó la clave o el acceso al modelo. Revisá la clave y los permisos en AI Studio.'
-      : status === 404 ? 'Gemini 2.5 Flash no está disponible para esta cuenta. No se cambió el modelo ni se usó el servidor.'
+      : status === 404 ? 'Google no tiene disponible el modelo Gemini 3.5 Flash-Lite para esta clave. Revisá en AI Studio que la clave sea de la Gemini API.'
       : 'Google no aceptó la solicitud. Revisá la configuración de tu cuenta en AI Studio.';
     return { ok: false, status, retryable: status === 429 || status >= 500, error };
   }

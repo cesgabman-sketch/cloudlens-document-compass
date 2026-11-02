@@ -70,7 +70,7 @@ function AjustesLector() {
         </div>
       </form>
       {mensaje && <p role={error ? 'alert' : 'status'} className={`rounded-md bg-muted p-3 text-sm ${error ? 'text-destructive' : 'text-foreground'}`}>{mensaje}</p>}
-      <p className="text-sm text-muted-foreground">Google ofrece un cupo gratuito según la cuenta, la región y el modelo. No se garantiza que todas las lecturas sean gratuitas. Se usa Gemini 2.5 Flash; Google puede limitar su acceso en cuentas nuevas.</p>
+      <p className="text-sm text-muted-foreground">Google ofrece un cupo gratuito según la cuenta, la región y el modelo. No se garantiza que todas las lecturas sean gratuitas. Se usa Gemini 3.5 Flash-Lite, que Google ofrece en el plan gratuito.</p>
       <p className="text-sm text-muted-foreground">Tu clave queda cifrada en esta PC y las fotos se envían directamente a Google. Si Google falla, no se usa automáticamente el servidor: podés reintentar o borrar la clave para volver al lector estándar.</p>
     </section>
   </main>;
