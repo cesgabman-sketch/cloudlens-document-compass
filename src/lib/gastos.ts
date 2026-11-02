@@ -20,3 +20,9 @@ export const esGastoValido = (g: Partial<Gasto>): g is Gasto =>
   typeof g.categoria === "string";
 
 export const totalGastos = (lista: Gasto[]) => lista.reduce((s, g) => s + g.monto, 0);
+
+/** Un solo mes muestra ese período; una foto de varios meses muestra todos. */
+export function mesDeGastosGuardados(lista: Gasto[]): string {
+  const meses = new Set(lista.map(g => g.fecha.slice(0, 7)));
+  return meses.size === 1 ? lista[0]?.fecha.slice(0, 7) ?? "" : "";
+}
