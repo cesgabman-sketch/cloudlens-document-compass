@@ -87,6 +87,7 @@ export const Route = createFileRoute("/api/leer-gastos")({
           headers: { "Lovable-API-Key": apiKey, "X-Lovable-AIG-SDK": "vercel-ai-sdk" },
           fetch: seguimiento.fetch,
         });
+        let errorStream: unknown;
         try {
           if (documento) {
             const result = streamText({
