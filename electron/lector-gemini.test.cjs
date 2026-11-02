@@ -3,12 +3,12 @@ const assert = require('node:assert/strict');
 const { leerGemini, probarGemini } = require('./lector-gemini.cjs');
 const contratos = require('./lector-contrato.json');
 const imagen = 'data:image/jpeg;base64,AA==';
-test('uses Gemini 2.5 Flash and preserves expense fields', async () => {
+test('uses Gemini 3.5 Flash-Lite and preserves expense fields', async () => {
   const datos = { gastos: [{ fecha: null, concepto: 'Compra', monto: 1200, categoria: 'Otros', camposDudosos: ['fecha'] }] };
   let calls = 0;
   const result = await leerGemini(async (url, request) => {
     calls++;
-    assert.equal(url, 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent');
+    assert.equal(url, 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent');
     const body = JSON.parse(request.body);
     assert.equal(body.contents[0].parts[1].inline_data.mime_type, 'image/jpeg');
     assert.deepEqual(body.generationConfig.responseJsonSchema, contratos.gastos.schema);
