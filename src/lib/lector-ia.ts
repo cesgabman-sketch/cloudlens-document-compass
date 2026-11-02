@@ -37,7 +37,7 @@ export async function leerFotoIA(imagen: string, modo: ModoLectura): Promise<unk
       body: JSON.stringify({ imagen, ...(modo === 'documento' ? { modo: 'documento' } : {}) }),
     });
   } catch { throw new ErrorLectura('No se pudo conectar con el lector. Revisá internet y reintentá.', true); }
-  const datos = await response.json();
+  const datos = await response.json().catch(() => ({ error: 'El lector respondió con un error. Intentá de nuevo más tarde.' }));
   if (!response.ok) throw new ErrorLectura(datos.error ?? 'No se pudo leer la foto.', response.status === 429 || response.status >= 500);
   return datos;
 }
