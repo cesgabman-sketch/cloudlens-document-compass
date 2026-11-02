@@ -8,7 +8,7 @@ const fs = require("fs");
 const os = require("os");
 const crypto = require("crypto");
 const { pathToFileURL } = require("url");
-const { assetsDeHtml } = require("./archivos-actualizacion.cjs");
+const { assetsDeHtml, huellaArchivo, cacheEsDeEstePaquete, MARCA_PAQUETE } = require("./archivos-actualizacion.cjs");
 const { crearAlmacenSeguro } = require("./almacen-seguro.cjs");
 const { leerGemini, probarGemini } = require("./lector-gemini.cjs");
 const almacenSeguro = crearAlmacenSeguro(safeStorage, () => app.getPath("userData"));
@@ -110,6 +110,7 @@ function cacheValido() {
 function borrarCache() {
   fs.rmSync(cacheDir(), { recursive: true, force: true });
 }
+const huellaPaquete = () => huellaArchivo(path.join(ROOT, "_shell.html"));
 
 // Serve cached (updated) files first, fall back to the bundled build.
 // Missing files with an extension (js/css/ico...) get null -> 404, never the HTML shell.
@@ -203,6 +204,7 @@ ipcMain.handle("actualizar:buscar", async () => {
     }
     if (!assetsDeHtml(html).every((rel) => archivos.includes(rel))) throw new Error("Actualización incompleta");
     fs.writeFileSync(path.join(tmp, "archivos.json"), JSON.stringify({ archivos }), "utf8");
+    fs.writeFileSync(path.join(tmp, MARCA_PAQUETE), huellaPaquete(), "utf8");
     fs.writeFileSync(path.join(tmp, "_shell.html"), html, "utf8");
     borrarCache();
     fs.renameSync(tmp, dir);
@@ -221,6 +223,8 @@ app.whenReady().then(() => {
   // Old updates (copied from the web pages) break the screens: discard them.
   fs.rmSync(path.join(app.getPath("userData"), "web-cache"), { recursive: true, force: true });
   fs.rmSync(path.join(app.getPath("userData"), "web-cache.tmp"), { recursive: true, force: true });
+  // A newly installed ZIP wins over updates downloaded by a previous installation.
+  if (fs.existsSync(cacheDir()) && !cacheEsDeEstePaquete(cacheDir(), huellaPaquete())) borrarCache();
   protocol.handle("app", (req) => {
     const rel = decodeURIComponent(new URL(req.url).pathname);
     const file = resolverArchivo(rel);
