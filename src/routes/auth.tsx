@@ -238,6 +238,17 @@ function Acceso() {
         )}
 
         {error && <p className="rounded-md bg-muted px-3 py-2 text-sm text-destructive" role="alert">{error}</p>}
+
+        {!esEscritorio() && (
+          <a
+            href="https://github.com/cesgabman-sketch/cloudlens-document-compass/releases/latest"
+            target="_blank"
+            rel="noreferrer"
+            className="block w-full rounded-md border px-3 py-2 text-center text-sm font-medium hover:bg-accent"
+          >
+            ⬇ Descargar el programa para Windows
+          </a>
+        )}
       </div>
     </main>
   );
