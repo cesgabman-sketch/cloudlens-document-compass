@@ -2,6 +2,7 @@ import type { Documento } from './documentos';
 import type { LecturaGasto } from '@/routes/api/leer-gastos';
 import type { LecturaCheque } from '@/routes/api/leer-cheque';
 import { baseIA } from './imagen';
+import { supabase } from '@/integrations/supabase/client';
 
 type ModoLectura = 'gastos' | 'documento' | 'cheque';
 type ResultadoPuente = { ok: boolean; error?: string; retryable?: boolean; datos?: unknown };
@@ -30,10 +31,12 @@ export async function leerFotoIA(imagen: string, modo: ModoLectura): Promise<unk
     if (!result.ok) throw new ErrorLectura(result.error ?? 'No se pudo leer con Google.', result.retryable);
     return result.datos;
   }
+  const { data: ses } = await supabase.auth.getSession();
+  const token = ses.session?.access_token;
   let response;
   try {
     response = await fetch(`${baseIA()}/api/${modo === 'cheque' ? 'leer-cheque' : 'leer-gastos'}`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       body: JSON.stringify({ imagen, ...(modo === 'documento' ? { modo: 'documento' } : {}) }),
     });
   } catch { throw new ErrorLectura('No se pudo conectar con el lector. Revisá internet y reintentá.', true); }

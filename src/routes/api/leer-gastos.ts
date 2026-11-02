@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { esAdminLector, MENSAJE_SIN_CLAVE } from "@/lib/lector-admin.server";
 import { createOpenAI } from "@ai-sdk/openai";
 import { jsonSchema, NoObjectGeneratedError, Output, streamText } from "ai";
 import { createLovableAiGatewayRunIdFetch, getLovableAiGatewayResponseHeaders } from "@/lib/ai/run-id";
@@ -9,7 +10,7 @@ import { limpiarDocumento } from "@/lib/documentos-filtrado";
 const CORS = {
   "Access-Control-Allow-Origin": "app://cheques",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 const json = (body: unknown, status = 200) => Response.json(body, { status, headers: CORS });
 
@@ -66,6 +67,7 @@ export const Route = createFileRoute("/api/leer-gastos")({
     handlers: {
       OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
       POST: async ({ request }) => {
+        if (!(await esAdminLector(request))) return json({ error: MENSAJE_SIN_CLAVE }, 403);
         const apiKey = process.env["LOVABLE_API_KEY"];
         if (!apiKey) return json({ error: "Falta configurar la clave del lector." }, 500);
         let imagen = "";
