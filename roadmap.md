@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Publicar la corrección de gastos y entregar ZIP Windows actualizado con guardado visible.
 - [x] Corregir guardado de fotos: persistencia confirmada por lectura local; mostrar el mes guardado y todos al reabrir; 33 pruebas y pantalla con cuenta real → foto con lectura simulada → guardar → reabrir → error de almacenamiento verificados; actualización Windows preparada, pendiente publicar y probar en la PC del cliente.
 - [ ] Continuar uso sin internet: ingreso local en Windows tras ingreso verificado, sin acceso administrativo offline; conservar licencia y datos locales
 - [ ] Lector híbrido: configuración Gemini propia cifrada en Windows, prueba de clave y lectura con mismo JSON; servidor por defecto sin cambio automático ante errores
