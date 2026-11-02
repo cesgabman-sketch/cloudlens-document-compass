@@ -20,6 +20,7 @@
 - Validate desktop shell asset references with the shared CommonJS helper and test the Electron update handler with mocked downloads; retain a working cache until the replacement is validated; a cached update is used only by the installation that downloaded it (fingerprint of the bundled shell). Why: updater failures must not erase a working installation, and an old cache must never hide a newly installed ZIP.
 
 ## Expense documents
+- Expense save confirmation requires a committed local transaction and read-back of every saved ID; show the saved dates' month (or all months for mixed dates) and open the list unfiltered. Why: older photos must not appear lost behind a current-month filter, and failed saves must retain the review.
 - Foto a Documento keeps one protected route per app screen and a public `/auth` page; the protected index is the only `/` route. Why: duplicate public/protected paths prevent route generation.
 - Session identity changes invalidate the router once at the root; sign-out cancels and clears queries before clearing the session. Why: protected cached views must not survive sign-out.
 - Remitos and budgets use a separate on-device IndexedDB store and a dedicated review component within the expenses page; they never become expenses automatically. Why: commercial documents are not necessarily paid expenses.

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CATEGORIAS, esGastoValido, totalGastos, type CampoGasto, type Gasto } from "@/lib/gastos";
+import { CATEGORIAS, esGastoValido, mesDeGastosGuardados, totalGastos, type CampoGasto, type Gasto } from "@/lib/gastos";
 import { Extracto } from "@/components/Extracto";
 import { borrarGasto, guardarGastos, listarGastos } from "@/lib/db-gastos";
 import { achicarImagen } from "@/lib/imagen";
@@ -40,6 +40,7 @@ function GastosPage() {
   const [filas, setFilas] = useState<Fila[]>([]);
   const [foto, setFoto] = useState("");
   const [leyendo, setLeyendo] = useState(false);
+  const [guardando, setGuardando] = useState(false);
   const [reintentable, setReintentable] = useState(false);
   const [aviso, setAviso] = useState("");
   const [mes, setMes] = useState("");
@@ -49,7 +50,6 @@ function GastosPage() {
   useEffect(() => {
     const h = hoyLocal();
     setHoy(h);
-    setMes(h.slice(0, 7));
     setManual((m) => ({ ...m, fecha: h }));
     listarGastos().then(setGastos).catch(() => setAviso("No se pudieron leer los gastos guardados."));
   }, []);
@@ -63,12 +63,24 @@ function GastosPage() {
 
   async function agregarManual(e: React.FormEvent) {
     e.preventDefault();
+    if (guardando) return;
     const g: Gasto = { id: nuevoId(), fecha: manual.fecha, concepto: manual.concepto.trim(), monto: Number(manual.monto), categoria: manual.categoria, origen: "manual" };
     if (!esGastoValido(g)) return setAviso("Completá fecha, concepto y un monto mayor a cero.");
-    await guardarGastos([g]);
-    setGastos(await listarGastos());
-    setManual({ fecha: hoy, concepto: "", monto: "", categoria: manual.categoria });
-    setAviso("Gasto guardado.");
+    setGuardando(true);
+    try {
+      await guardarYMostrar([g]);
+      setManual({ fecha: hoy, concepto: "", monto: "", categoria: manual.categoria });
+      setAviso("Gasto guardado en esta PC.");
+    } catch { setAviso("No se pudo confirmar el guardado en esta PC. Los datos siguen disponibles para reintentar."); }
+    finally { setGuardando(false); }
+  }
+
+  async function guardarYMostrar(lista: Gasto[]) {
+    await guardarGastos(lista);
+    const guardados = await listarGastos();
+    if (lista.some(g => !guardados.some(guardado => guardado.id === g.id))) throw new Error("Guardado no confirmado.");
+    setGastos(guardados);
+    setMes(mesDeGastosGuardados(lista));
   }
 
   async function leerFoto(file: File) {
@@ -118,17 +130,21 @@ function GastosPage() {
   const pendientes = filas.filter((f) => f.incluir && f.dudosos.length).length;
 
   async function guardarLectura() {
+    if (guardando) return;
     const lista: Gasto[] = filas
       .filter((f) => f.incluir)
       .map((f) => ({ id: nuevoId(), fecha: f.fecha, concepto: f.concepto.trim(), monto: Number(f.monto), categoria: f.categoria, origen: "foto" }));
     if (lista.some((g) => !esGastoValido(g))) return setAviso("Hay renglones incompletos: revisá fecha, concepto y monto (o destildalos).");
     if (!lista.length) return setAviso("Seleccioná al menos un gasto.");
     if (pendientes && !confirm("Quedan renglones dudosos. ¿Revisaste la foto y confirmás que los datos son correctos?")) return;
-    await guardarGastos(lista);
-    setGastos(await listarGastos());
-    setFilas([]);
-    setFoto("");
-    setAviso(`Listo: se guardaron ${lista.length} gasto(s) de la foto.`);
+    setGuardando(true);
+    try {
+      await guardarYMostrar(lista);
+      setFilas([]);
+      setFoto("");
+      setAviso(`Listo: se guardaron ${lista.length} gasto(s) de la foto en esta PC.`);
+    } catch { setAviso("No se pudo confirmar el guardado en esta PC. La foto y los renglones siguen disponibles para reintentar."); }
+    finally { setGuardando(false); }
   }
 
   async function borrar(id: string) {
@@ -142,7 +158,7 @@ function GastosPage() {
   async function guardarEdicion(e: React.FormEvent) {
     e.preventDefault();
     if (!editando || !esGastoValido(editando)) return setAviso("Completá fecha, concepto y un importe mayor a cero.");
-    try { await guardarGastos([editando]); setGastos(await listarGastos()); setEditando(null); setAviso("Gasto actualizado."); }
+    try { await guardarYMostrar([editando]); setEditando(null); setAviso("Gasto actualizado."); }
     catch { setAviso("No se pudo guardar el cambio."); }
   }
 
@@ -182,7 +198,7 @@ function GastosPage() {
       <section className="border-t pt-5">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-semibold">Cargar desde foto</h2>
-          <Button type="button" disabled={leyendo} onClick={() => archivo.current?.click()}>
+          <Button type="button" disabled={leyendo || guardando} onClick={() => archivo.current?.click()}>
             {leyendo ? "Leyendo la foto…" : "📷 Subir foto de nota o ticket"}
           </Button>
           <input ref={archivo} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => e.target.files?.[0] && leerFoto(e.target.files[0])} />
@@ -220,10 +236,10 @@ function GastosPage() {
               </table>
             </div>
             <div className="flex gap-2">
-              <Button type="button" onClick={guardarLectura}>
-                Guardar {filas.filter((f) => f.incluir).length} gasto(s)
+              <Button type="button" disabled={guardando} onClick={guardarLectura}>
+                {guardando ? "Guardando…" : `Guardar ${filas.filter((f) => f.incluir).length} gasto(s)`}
               </Button>
-              <Button type="button" variant="secondary" onClick={() => { setFilas([]); setFoto(""); }}>Descartar</Button>
+              <Button type="button" variant="secondary" disabled={guardando} onClick={() => { setFilas([]); setFoto(""); }}>Descartar</Button>
             </div>
             <p className="font-semibold">Total de la foto: {peso(filas.filter(f => f.incluir).reduce((s, f) => s + (Number(f.monto) || 0), 0))}</p>
           </div>
@@ -239,14 +255,14 @@ function GastosPage() {
           <select aria-label="Categoría" className={input} value={manual.categoria} onChange={(e) => setManual({ ...manual, categoria: e.target.value })}>
             {CATEGORIAS.map((c) => <option key={c}>{c}</option>)}
           </select>
-          <Button type="submit" className="sm:col-span-5 sm:justify-self-start">Agregar gasto</Button>
+          <Button type="submit" disabled={guardando} className="sm:col-span-5 sm:justify-self-start">Agregar gasto</Button>
         </form>
       </section>
 
       <section className="border-t pt-5">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-semibold">Gastos registrados</h2>
-          <label className="flex items-center gap-2 text-sm">Mes <input type="month" className={input + " w-auto"} value={mes} onChange={(e) => setMes(e.target.value)} /></label>
+          <div className="flex flex-wrap items-center gap-2"><label className="flex items-center gap-2 text-sm">Mes <input type="month" className={input + " w-auto"} value={mes} onChange={(e) => setMes(e.target.value)} /></label><Button variant={mes ? "outline" : "secondary"} onClick={() => setMes("")}>Todos los meses</Button></div>
         </div>
         <p className="mb-3 text-lg font-semibold">Total: {peso(totalGastos(delMes))}</p>
         {delMes.length > 0 && <div className="mb-4 flex flex-wrap gap-2">

@@ -18,9 +18,13 @@ function tx<T>(modo: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest<T
     (db) =>
       new Promise((resolve, reject) => {
         const t = db.transaction(STORE, modo);
-        const r = fn(t.objectStore(STORE));
+        let r: IDBRequest<T> | void;
         t.oncomplete = () => { resolve(r ? r.result : undefined); db.close(); };
-        t.onerror = () => reject(t.error);
+        const fallar = () => { db.close(); reject(t.error ?? new Error("No se pudo guardar en esta PC.")); };
+        t.onerror = fallar;
+        t.onabort = fallar;
+        try { r = fn(t.objectStore(STORE)); }
+        catch (error) { t.abort(); db.close(); reject(error); }
       }),
   );
 }
