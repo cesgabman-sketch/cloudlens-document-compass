@@ -4,6 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { accesoSinInternet, borrarAccesoLocal, recordarAcceso } from "@/lib/acceso-local";
+import { esEscritorio, URL_PUBLICADA } from "@/lib/servidor";
+
+/** Email links must open a web page: the Windows program (app://) cannot receive them. */
+function direccionWeb(): string {
+  return esEscritorio() ? URL_PUBLICADA : window.location.origin;
+}
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -19,7 +25,7 @@ export const Route = createFileRoute("/auth")({
   component: Acceso,
 });
 
-type Modo = "entrar" | "crear" | "empresa";
+type Modo = "entrar" | "crear" | "empresa" | "olvide";
 
 const input = "w-full rounded-md border border-input bg-background px-3 py-2 text-sm";
 
@@ -80,7 +86,7 @@ function Acceso() {
       const { data, error: err } = await supabase.auth.signUp({
         email,
         password: clave,
-        options: { emailRedirectTo: window.location.origin },
+        options: { emailRedirectTo: direccionWeb() },
       });
       if (err) throw err;
       if (data.session) {
@@ -98,6 +104,24 @@ function Acceso() {
             ? "Ese email ya tiene cuenta. Tocá «Entrar»."
             : `No se pudo crear la cuenta: ${msg}`,
       );
+    } finally { setCargando(false); }
+  }
+
+  async function pedirNuevaClave(e: React.FormEvent) {
+    e.preventDefault();
+    if (cargando) return;
+    setError(""); setAviso(""); setCargando(true);
+    try {
+      const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${direccionWeb()}/reset-password`,
+      });
+      if (err) throw err;
+      setAviso("Listo. Si ese email tiene cuenta, te llegó un mensaje con un enlace para elegir una clave nueva. Revisá también la carpeta de spam. Después volvé acá y entrá con la clave nueva.");
+      setModo("entrar");
+    } catch (err) {
+      setError(/rate limit|too many/i.test((err as Error).message)
+        ? "Pediste muchos enlaces seguidos. Esperá unos minutos y probá de nuevo."
+        : `No se pudo enviar el email: ${(err as Error).message}`);
     } finally { setCargando(false); }
   }
 
@@ -175,6 +199,22 @@ function Acceso() {
             </form>
             <button onClick={salirDeLaSesion} className="text-xs text-muted-foreground underline">Cerrar sesión</button>
           </div>
+        ) : modo === "olvide" ? (
+          <div className="space-y-3">
+            <h2 className="text-lg font-semibold">¿Olvidaste tu clave?</h2>
+            <p className="text-sm text-muted-foreground">
+              No hace falta crear otra cuenta. Escribí el email con el que te registraste y te mandamos un enlace para elegir una clave nueva. Tus datos y tu empresa se mantienen.
+            </p>
+            <form onSubmit={pedirNuevaClave} className="space-y-2">
+              <input className={input} type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <button disabled={cargando} className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60">
+                {cargando ? "Un momento…" : "Enviarme el enlace"}
+              </button>
+            </form>
+            <button type="button" onClick={() => { setModo("entrar"); setError(""); }} className="text-sm text-muted-foreground underline">
+              Volver a entrar
+            </button>
+          </div>
         ) : (
           <div className="space-y-3">
             <div className="flex gap-2 text-sm">
@@ -188,6 +228,11 @@ function Acceso() {
                 {cargando ? "Un momento…" : modo === "entrar" ? "Entrar" : "Crear cuenta"}
               </button>
             </form>
+            {modo === "entrar" && (
+              <button type="button" onClick={() => { setModo("olvide"); setError(""); setAviso(""); }} className="text-sm text-primary underline">
+                ¿Olvidaste tu clave?
+              </button>
+            )}
             {aviso && <p className="rounded-md bg-muted px-3 py-2 text-sm" role="status">{aviso}</p>}
           </div>
         )}
