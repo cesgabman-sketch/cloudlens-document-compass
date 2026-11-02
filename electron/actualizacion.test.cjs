@@ -67,3 +67,12 @@ test("rejects an incomplete update without erasing the working cached version", 
     assert.equal(fs.readFileSync(path.join(cache, "assets/old.js"), "utf8"), "working version");
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
+test("an update downloaded by another installation is not reused", () => {
+  const { cacheEsDeEstePaquete, MARCA_PAQUETE } = require("./archivos-actualizacion.cjs");
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cheques-paquete-test-"));
+  assert.equal(cacheEsDeEstePaquete(dir, "nuevo"), false);
+  fs.writeFileSync(path.join(dir, MARCA_PAQUETE), "viejo");
+  assert.equal(cacheEsDeEstePaquete(dir, "nuevo"), false);
+  fs.writeFileSync(path.join(dir, MARCA_PAQUETE), "nuevo");
+  assert.equal(cacheEsDeEstePaquete(dir, "nuevo"), true);
+});

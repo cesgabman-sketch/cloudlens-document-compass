@@ -17,7 +17,7 @@
 - Desktop program = Electron shell (`electron/main.cjs`) serving a static SPA build from `vite.desktop.config.ts` via `app://cheques`; package from a clean /tmp staging dir with `@electron/packager`, never change root `package.json` main. Why: SSR web app can't run from file://, and staging keeps the web deploy untouched.
 - Desktop assistant calls the published web app's `/api/consulta-cheques` (base URL from `VITE_ASISTENTE_URL` at desktop build time; CORS allows `app://cheques`). Why: the AI key must stay server-side.
 - Desktop self-update downloads the desktop SPA build from `public/escritorio/` (programa.html + archivos.json list), regenerated with `scripts/publicar-escritorio.sh` before every publish that should reach the PCs. Why: the published SSR pages can't hydrate from app://, and lazy route chunks aren't referenced by the HTML.
-- Validate desktop shell asset references with the shared CommonJS helper and test the Electron update handler with mocked downloads; retain a working cache until the replacement is validated. Why: updater failures must not erase a working installation.
+- Validate desktop shell asset references with the shared CommonJS helper and test the Electron update handler with mocked downloads; retain a working cache until the replacement is validated; a cached update is used only by the installation that downloaded it (fingerprint of the bundled shell). Why: updater failures must not erase a working installation, and an old cache must never hide a newly installed ZIP.
 
 ## Expense documents
 - Foto a Documento keeps one protected route per app screen and a public `/auth` page; the protected index is the only `/` route. Why: duplicate public/protected paths prevent route generation.
@@ -30,3 +30,5 @@
 - Licenciamiento por equipo: tablas `licencias`/`terminales` sin acceso directo (solo service_role); toda activación pasa por las funciones `activar_licencia`/`estado_licencia` (ejecutables por anon) y la administración por funciones que exigen `has_role(admin)`. Why: la PC del cliente valida antes de iniciar sesión y nadie debe leer claves ajenas.
 - El estado de activación se guarda en userData/licencia.json firmado con HMAC del machine ID (hash de hostname + MACs); la gracia offline es de 7 días y la revalidación cada 12 h. Why: copiar el programa a otra PC invalida la firma y el cliente puede trabajar sin internet por un tiempo acotado.
 - "Actualizar programa" exige primero una copia JSON completa (gastos, documentos y cheques) en Documentos/Copias Foto a Documento; si la copia falla, la actualización se cancela. Why: ninguna actualización debe poner en riesgo los datos del cliente.
+
+- Auth email links (signup confirmation, password reset) always point to the published web URL when running in the desktop shell; `/reset-password` is a public route. Why: app:// cannot receive email links.
