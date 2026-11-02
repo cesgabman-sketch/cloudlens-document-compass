@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Unificar licencias de todos los ERP en el panel existente con selector de programa; requiere conectar cada ERP al servicio central y modificar el proyecto del panel.
 - [x] Publicar la corrección de gastos y entregar ZIP Windows v4: 42 pruebas pasan, foto con lectura simulada → guardar → reabrir verificados, ZIP íntegro, página publicada HTTP 200 y listado de actualización coincide; ejecución en Windows real pendiente del cliente.
 - [x] Corregir guardado de fotos: persistencia confirmada por lectura local; mostrar el mes guardado y todos al reabrir; 33 pruebas y pantalla con cuenta real → foto con lectura simulada → guardar → reabrir → error de almacenamiento verificados; actualización Windows publicada, pendiente probar en la PC del cliente.
 - [ ] Continuar uso sin internet: ingreso local en Windows tras ingreso verificado, sin acceso administrativo offline; conservar licencia y datos locales
