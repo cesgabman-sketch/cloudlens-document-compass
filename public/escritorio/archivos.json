@@ -1,18 +1,20 @@
 {
- "version": 1793379666300,
+ "version": 1793628159692,
  "archivos": [
   "assets/BotonActualizar-DzlErL4Z.js",
-  "assets/_authenticated-BOJb3D_8.js",
-  "assets/admin-r-3AZDHW.js",
-  "assets/auth-DoP9-fqz.js",
+  "assets/_authenticated-DHHgJDRq.js",
+  "assets/admin-CPwBLZMb.js",
+  "assets/ajustes-jNn8VLE7.js",
+  "assets/auth-CdB6CcXp.js",
   "assets/button-DUDAzcGC.js",
-  "assets/cotizaciones-Cxo1p7BI.js",
+  "assets/cotizaciones-CR2ZVpvC.js",
   "assets/exceljs.min-DN_wkE-L.js",
-  "assets/gastos-B94Vk4PX.js",
-  "assets/index-CIxCCB1l.js",
+  "assets/gastos-BSe47XUS.js",
+  "assets/index-3y_1_lSt.js",
   "assets/rolldown-runtime-W7wSyTde.js",
-  "assets/route-b_uQsw9z.js",
-  "assets/styles-Bd0AANq5.css",
+  "assets/route-C6juRDPn.js",
+  "assets/styles-DpqzhzAv.css",
+  "assets/trash-2-DigKtH2M.js",
   "assets/useRouter-q64TQX91.js"
  ]
 }
