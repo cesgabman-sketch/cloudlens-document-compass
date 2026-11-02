@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Corregir guardado de fotos: confirmar persistencia local, mostrar los gastos recién guardados aunque tengan fecha de otro mes y conservar revisión ante errores; probar lectura → guardar → reabrir.
 - [ ] Continuar uso sin internet: ingreso local en Windows tras ingreso verificado, sin acceso administrativo offline; conservar licencia y datos locales
 - [ ] Lector híbrido: configuración Gemini propia cifrada en Windows, prueba de clave y lectura con mismo JSON; servidor por defecto sin cambio automático ante errores
 - [ ] Verificar lectura real con clave Gemini del cliente (requiere una clave válida ingresada en su PC)
