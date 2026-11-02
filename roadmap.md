@@ -1,6 +1,7 @@
 # Roadmap
 - [x] Preparar conexión de Foto a Documento al panel único: conservar licencias locales, enviar programa/PC sin mail, revalidar con la autoridad original; 15 pruebas de licencias y 4 de actualización pasan; archivos Windows regenerados.
-- [ ] Publicar conexión al panel único y renovar ZIP/GitHub para PCs sin activar; no solicitado en este turno. Activación exitosa real pendiente de clave de Foto a Documento probada en la PC del cliente, sin ocupar su cupo con una PC de prueba.
+- [ ] Publicar conexión de Foto a Documento y renovar ZIP/GitHub para PCs sin activar; solicitado por el usuario. Panel único pertenece a otro proyecto; comprobar servicio ya publicado. Activación exitosa real pendiente en Windows sin ocupar cupos del cliente.
+- [ ] Explicar actualización de clientes con versión anterior: activados usan Actualizar programa tras publicar; bloqueados descargan ZIP nuevo conservando datos locales.
 - [ ] Unificar licencias de todos los ERP en el panel existente con selector de programa; requiere conectar cada ERP al servicio central y modificar el proyecto del panel.
 - [x] Publicar la corrección de gastos y entregar ZIP Windows v4: 42 pruebas pasan, foto con lectura simulada → guardar → reabrir verificados, ZIP íntegro, página publicada HTTP 200 y listado de actualización coincide; ejecución en Windows real pendiente del cliente.
 - [x] Corregir guardado de fotos: persistencia confirmada por lectura local; mostrar el mes guardado y todos al reabrir; 33 pruebas y pantalla con cuenta real → foto con lectura simulada → guardar → reabrir → error de almacenamiento verificados; actualización Windows publicada, pendiente probar en la PC del cliente.
