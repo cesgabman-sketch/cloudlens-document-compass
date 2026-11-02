@@ -1,7 +1,9 @@
 # Roadmap
 - [x] Preparar conexión de Foto a Documento al panel único: conservar licencias locales, enviar programa/PC sin mail, revalidar con la autoridad original; 15 pruebas de licencias y 4 de actualización pasan; archivos Windows regenerados.
-- [ ] Publicar conexión de Foto a Documento y renovar ZIP/GitHub para PCs sin activar; solicitado por el usuario. Panel único pertenece a otro proyecto; comprobar servicio ya publicado. Activación exitosa real pendiente en Windows sin ocupar cupos del cliente.
-- [ ] Explicar actualización de clientes con versión anterior: activados usan Actualizar programa tras publicar; bloqueados descargan ZIP nuevo conservando datos locales.
+- [x] Publicar conexión de Foto a Documento: /escritorio/archivos.json coincide con versión local y archivo publicado contiene el servicio central; panel central ya responde. ZIP v5 (1.2.3) íntegro y conexión verificada en app.asar; entregado en Files.
+- [ ] Adjuntar ZIP v5 al borrador GitHub v1.2.3 y publicar Release: herramienta del conector solo envía JSON, no cuerpo binario de ZIP; requiere que el usuario adjunte desde GitHub. Borrador creado sin retirar v4.
+- [x] Explicar actualización de clientes con versión anterior: activados usan Actualizar programa tras publicar; bloqueados descargan ZIP nuevo conservando datos locales.
+- [ ] Probar activación exitosa central en la PC del cliente: requiere clave emitida para Foto a Documento y Windows real; no ocupar cupos con hardware de prueba.
 - [ ] Unificar licencias de todos los ERP en el panel existente con selector de programa; requiere conectar cada ERP al servicio central y modificar el proyecto del panel.
 - [x] Publicar la corrección de gastos y entregar ZIP Windows v4: 42 pruebas pasan, foto con lectura simulada → guardar → reabrir verificados, ZIP íntegro, página publicada HTTP 200 y listado de actualización coincide; ejecución en Windows real pendiente del cliente.
 - [x] Corregir guardado de fotos: persistencia confirmada por lectura local; mostrar el mes guardado y todos al reabrir; 33 pruebas y pantalla con cuenta real → foto con lectura simulada → guardar → reabrir → error de almacenamiento verificados; actualización Windows publicada, pendiente probar en la PC del cliente.
