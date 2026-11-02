@@ -3,12 +3,14 @@
 // con el identificador del hardware (ver electron/main.cjs), así una copia del
 // programa en otra máquina no pasa la verificación.
 import { supabase } from "@/integrations/supabase/client";
+import { consultarLicenciaCentral, esClaveLocalInexistente, type RespuestaLicencia } from "./licencia-central";
 
 export interface EstadoLicencia {
   clave: string;
   cliente: string;
   vencimiento: string | null;
   ultimaValidacion: string; // ISO
+  origen?: "local" | "central"; // Missing in previously installed local licenses.
 }
 
 export const DIAS_GRACIA_OFFLINE = 7;
@@ -54,10 +56,16 @@ export async function verificarLicencia(): Promise<ResultadoLicencia> {
   if (!debeRevalidar(estado, new Date())) return { acceso: true, estado };
   try {
     const machineId = await window.licencia.machineId();
-    const { data, error } = await supabase.rpc("estado_licencia", { _clave: estado.clave, _machine_id: machineId });
-    if (error) throw error;
-    if (data && (data as { ok?: boolean }).ok) {
-      const d = data as { cliente?: string; vencimiento?: string | null };
+    let d: RespuestaLicencia | null;
+    if (estado.origen === "central") {
+      const nombrePc = await window.licencia.nombrePc();
+      d = await consultarLicenciaCentral(estado.clave, machineId, nombrePc);
+    } else {
+      const { data, error } = await supabase.rpc("estado_licencia", { _clave: estado.clave, _machine_id: machineId });
+      if (error) throw error;
+      d = data as RespuestaLicencia | null;
+    }
+    if (d?.ok) {
       const nuevo: EstadoLicencia = {
         ...estado,
         cliente: d.cliente ?? estado.cliente,
@@ -67,7 +75,7 @@ export async function verificarLicencia(): Promise<ResultadoLicencia> {
       await window.licencia.guardar(nuevo);
       return { acceso: true, estado: nuevo };
     }
-    return { acceso: false, motivo: ((data as { motivo?: string })?.motivo) || "La licencia ya no es válida." };
+    return { acceso: false, motivo: d?.motivo || "La licencia ya no es válida." };
   } catch {
     if (dentroDeGraciaOffline(estado, new Date())) return { acceso: true, estado };
     return {
@@ -87,15 +95,21 @@ export async function activarLicencia(clave: string): Promise<{ ok: boolean; mot
     const nombrePc = await window.licencia.nombrePc();
     const { data, error } = await supabase.rpc("activar_licencia", { _clave: limpia, _machine_id: machineId, _nombre_pc: nombrePc });
     if (error) throw error;
-    const d = data as { ok?: boolean; motivo?: string; cliente?: string; vencimiento?: string | null };
+    let d = data as RespuestaLicencia | null;
+    let origen: "local" | "central" = "local";
+    if (esClaveLocalInexistente(d)) {
+      origen = "central";
+      d = await consultarLicenciaCentral(limpia, machineId, nombrePc);
+    }
     if (!d?.ok) return { ok: false, motivo: d?.motivo || "No se pudo activar la licencia." };
     const estado: EstadoLicencia = {
       clave: limpia,
       cliente: d.cliente ?? "",
       vencimiento: d.vencimiento ?? null,
       ultimaValidacion: new Date().toISOString(),
+      origen,
     };
-    await window.licencia.guardar(estado);
+    if (!(await window.licencia.guardar(estado))) return { ok: false, motivo: "No se pudo guardar la activación en esta PC. Reintentá con la misma clave." };
     return { ok: true, estado };
   } catch {
     return { ok: false, motivo: "No hay conexión a internet. La activación necesita internet una sola vez." };
